@@ -11,10 +11,12 @@ import com.douwe.banque.gui.client.MesCompteListePanel;
 import com.douwe.banque.gui.client.MesOperationsListePanel;
 import com.douwe.banque.gui.client.TransfertPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -41,6 +43,7 @@ public class MainMenuPanel extends JPanel {
     private JXHyperlink debit;
     private JXHyperlink credit;
     private JPanel container;
+  
 
     public MainMenuPanel() {
         setLayout(new BorderLayout());
