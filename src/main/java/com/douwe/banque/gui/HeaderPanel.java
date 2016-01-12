@@ -24,7 +24,7 @@ public abstract class HeaderPanel extends JPanel{
 
     private JXHyperlink deconnexion;
     private JLabel username;
-    private MessageHelper helper = new MessageHelper();
+    private final MessageHelper helper = new MessageHelper();
     
     public HeaderPanel(){
         setLayout(new FlowLayout(FlowLayout.RIGHT,10,10));        

@@ -3,6 +3,7 @@ package com.douwe.banque.gui;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.common.LoginPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,9 +23,10 @@ public class MainFrame extends JFrame {
 
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
+     private final MessageHelper helper = new MessageHelper();
 
     public MainFrame() {
-        setTitle("Ma banque à moi tout seul");
+        setTitle(helper.getProperty("mainFrame.titre"));
         getContentPane().setLayout(new BorderLayout(10, 10));
         headerPanel = new HeaderPanel() {
             @Override
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame {
                     PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
                     pst3.setInt(1, Operation.deconnexion.ordinal());
                     pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                    pst3.setString(3, "Deconnexion de l'utilisateur  " + UserInfo.getUsername());
+                    pst3.setString(3, helper.getProperty("mainFrame.deconnecteUtilisateur") + UserInfo.getUsername());
                     pst3.setInt(4, 1);
                     pst3.setInt(5, 1);
                     pst3.executeUpdate();
