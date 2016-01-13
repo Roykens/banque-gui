@@ -12,6 +12,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Transient;
+import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.JXHyperlink;
@@ -41,7 +43,7 @@ public abstract class HeaderPanel extends JPanel{
         add(username);
         add(deconnexion); 
         deconnexion.addActionListener(new ActionListener() {
-            @Override
+
             public void actionPerformed(ActionEvent ae) {
                 deconnexion();
                 setEnabledHeader(false);

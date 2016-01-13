@@ -7,10 +7,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,9 +60,16 @@ public class ClientPanel extends ModelDeBasePanel {
             modifierBtn = new JButton("Modifier");
             filtreBtn = new JButton("Filtrer");
             filtreBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
+                    selectCustomerbyStatus(); 
+                    if (conn != null) {
+                        closeConnection();
+                    }
+                }
+
+                private void selectCustomerbyStatus() throws HeadlessException {
                     String name = nameText.getText();
-                    //if ((name != null) && !("".equals(name))) {
                     try {
                         PreparedStatement pst = conn.prepareStatement("select * from customer where status = ? and name like ?");
                         pst.setInt(1, 0);
@@ -83,15 +90,7 @@ public class ClientPanel extends ModelDeBasePanel {
                         JOptionPane.showMessageDialog(null, "Impossible de filtrer vos données");
                         Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
-                    }
                 }
-                //}
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -103,6 +102,7 @@ public class ClientPanel extends ModelDeBasePanel {
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
@@ -147,11 +147,7 @@ public class ClientPanel extends ModelDeBasePanel {
                         JOptionPane.showMessageDialog(null, "Aucune donnée n'est selectionnée");
                     }
                     if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
+                        closeConnection();
                     }
                 }
             });
@@ -188,11 +184,15 @@ public class ClientPanel extends ModelDeBasePanel {
             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex1) {
-                Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex1);
-            }
+            closeConnection();
+        }
+    }
+
+    private void closeConnection() {
+        try {
+            conn.close();
+        } catch (SQLException ex1) {
+            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex1);
         }
     }
 }
