@@ -1,2 +1,4 @@
-target/
 banque.db
+target/
+*.class
+

@@ -11,10 +11,12 @@ import com.douwe.banque.gui.client.MesCompteListePanel;
 import com.douwe.banque.gui.client.MesOperationsListePanel;
 import com.douwe.banque.gui.client.TransfertPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -41,11 +43,13 @@ public class MainMenuPanel extends JPanel {
     private JXHyperlink debit;
     private JXHyperlink credit;
     private JPanel container;
+     private final MessageHelper helper = new MessageHelper();
+  
 
     public MainMenuPanel() {
         setLayout(new BorderLayout());
         mesComptes = new JXHyperlink();
-        mesComptes.setText("Mes Comptes");
+        mesComptes.setText(helper.getProperty("mainMenuPanel.mesComptes"));
         mesComptes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
@@ -58,7 +62,7 @@ public class MainMenuPanel extends JPanel {
         mesComptes.setUnclickedColor(Color.blue);
         mesComptes.setClickedColor(Color.blue);
         mesOperations = new JXHyperlink();
-        mesOperations.setText("Mes Opérations");
+        mesOperations.setText(helper.getProperty("mainMenuPanel.mesOperations"));
         mesOperations.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
@@ -71,7 +75,7 @@ public class MainMenuPanel extends JPanel {
         mesOperations.setUnclickedColor(Color.blue);
         mesOperations.setClickedColor(Color.blue);
         tranfer = new JXHyperlink();
-        tranfer.setText("Transfert");
+        tranfer.setText(helper.getProperty("mainMenuPanel.transfert"));
         tranfer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
@@ -89,19 +93,27 @@ public class MainMenuPanel extends JPanel {
                 return UserInfo.getRole() == RoleType.admin;
             }
         };
-        utilisateurs.setText("Utilisateurs");
+        utilisateurs.setText(helper.getProperty("mainMenuPanel.utilisateurs"));
         utilisateurs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new UtilisateurPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new UtilisateurPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         utilisateurs.setUnclickedColor(Color.blue);
         utilisateurs.setClickedColor(Color.blue);
         comptes = new JXHyperlink();
-        comptes.setText("Comptes");
+        comptes.setText(helper.getProperty("mainMenuPanel.comptes"));
         comptes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new ComptePanel(MainMenuPanel.this));
+                try {
+                    setContenu(new ComptePanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         comptes.setUnclickedColor(Color.blue);
@@ -112,19 +124,27 @@ public class MainMenuPanel extends JPanel {
                 return UserInfo.getRole() == RoleType.admin;
             }
         };;
-        operations.setText("Opérations");
+        operations.setText(helper.getProperty("mainMenuPanel.operations"));
         operations.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new OperationsPanel());
+                try {
+                    setContenu(new OperationsPanel());
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         operations.setUnclickedColor(Color.blue);
         operations.setClickedColor(Color.blue);
         customer = new JXHyperlink();
-        customer.setText("Clients");
+        customer.setText(helper.getProperty("mainMenuPanel.clients"));
         customer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new ClientPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new ClientPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         customer.setUnclickedColor(Color.blue);
@@ -136,7 +156,7 @@ public class MainMenuPanel extends JPanel {
                 return UserInfo.getRole() == RoleType.customer;
             }
         };
-        clientPane.setTitle("Espace client");
+        clientPane.setTitle(helper.getProperty("mainMenuPanel.espaceClient"));
         clientPane.add(mesComptes);
         clientPane.add(mesOperations);
         clientPane.add(tranfer);
@@ -147,23 +167,31 @@ public class MainMenuPanel extends JPanel {
                 return UserInfo.getRole() == RoleType.employee;
             }
         };
-        employee.setTitle("Espace Employé");
+        employee.setTitle(helper.getProperty("mainMenuPanel.espaceEmploye"));
         employee.add(debit = new JXHyperlink());
-        debit.setText("Débit");
+        debit.setText(helper.getProperty("mainMenuPanel.debit"));
         debit.setUnclickedColor(Color.blue);
         debit.setClickedColor(Color.blue);
         debit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new NouveauDebitPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new NouveauDebitPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         employee.add(credit = new JXHyperlink());
-        credit.setText("Crédit");
+        credit.setText(helper.getProperty("mainMenuPanel.credit"));
         credit.setUnclickedColor(Color.blue);
         credit.setClickedColor(Color.blue);
         credit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new NouveauDepotPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new NouveauDepotPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         menu.add(employee);
@@ -173,16 +201,16 @@ public class MainMenuPanel extends JPanel {
                 return (UserInfo.getRole() == RoleType.admin) || (UserInfo.getRole() == RoleType.employee);
             }
         };
-        adminPane.setTitle("Administration");
+        adminPane.setTitle(helper.getProperty("mainMenuPanel.admin"));
         adminPane.add(comptes);
         adminPane.add(customer);
         adminPane.add(operations);
         adminPane.add(utilisateurs);
         menu.add(adminPane);
         JXTaskPane profilPane = new JXTaskPane();
-        profilPane.setTitle("Profil");
+        profilPane.setTitle(helper.getProperty("mainMenuPanel.profil"));
         profilPane.add(profil = new JXHyperlink());
-        profil.setText("Profil");
+        profil.setText(helper.getProperty("mainMenuPanel.profil"));
         profil.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 JOptionPane.showMessageDialog(null, "Si j'implémente tout alors que feront mes étudiants?");

@@ -1,6 +1,8 @@
 package com.douwe.banque.gui;
 
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.MessageHelper;
+import com.sun.xml.internal.ws.developer.Serialization;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,6 +12,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Transient;
+import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.JXHyperlink;
@@ -22,22 +26,22 @@ public abstract class HeaderPanel extends JPanel{
 
     private JXHyperlink deconnexion;
     private JLabel username;
+    @Serialization
+    private final MessageHelper helper = new MessageHelper();
+    
     public HeaderPanel(){
         setLayout(new FlowLayout(FlowLayout.RIGHT,10,10));        
-        setBackground(new Color(166, 202, 240));
-        //JPanel pan = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
-        //pan.setBorder(new EmptyBorder(0, 0, 0, 10));
+        setBackground(new Color(166, 202, 240)); 
         setPreferredSize(new Dimension(800,180));
-        username = new JLabel("Bonjour,");
+        username = new JLabel(helper.getProperty("header.presentation"));
         deconnexion = new JXHyperlink();
         deconnexion.setUnclickedColor(Color.blue);
         deconnexion.setClickedColor(Color.blue);
-        deconnexion.setText("Deconnexion");
+        deconnexion.setText(helper.getProperty("header.deconnexion"));
         deconnexion.setVisible(false);
         username.setVisible(false);
         add(username);
-        add(deconnexion);
-        //add(BorderLayout.CENTER,pan);
+        add(deconnexion); 
         deconnexion.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
@@ -57,10 +61,10 @@ public abstract class HeaderPanel extends JPanel{
         ((Graphics2D)g).setPaint(gp);
         g.setFont(font);
         g.setColor(Color.yellow);
-        g.drawString("MA BANQUE VRAIMENT POPULAIRE",310,80);
+        g.drawString(helper.getProperty("header.titre"),310,80);
         g.setFont(new Font("Serif", Font.ITALIC, 24));
         g.setColor(Color.CYAN);
-        g.drawString("Je suis nul en design et je m'en fou", 390, 120);
+        g.drawString(helper.getProperty("header.design"), 390, 120);
     }
 
     public void setEnabledHeader(boolean status){

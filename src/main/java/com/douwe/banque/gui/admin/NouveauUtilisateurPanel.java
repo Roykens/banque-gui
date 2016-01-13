@@ -3,6 +3,7 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -10,9 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -29,17 +28,17 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauUtilisateurPanel extends JPanel {
+public class NouveauUtilisateurPanel extends ModelDeBasePanel {
 
     private JTextField loginText;
     private JPasswordField passwdText1;
     private JPasswordField passwdText2;
     private JComboBox<RoleType> role;
     private JButton enregistrer;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public NouveauUtilisateurPanel(MainMenuPanel parentFrame) {
+    public NouveauUtilisateurPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         setLayout(new BorderLayout(20, 20));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -80,7 +79,6 @@ public class NouveauUtilisateurPanel extends JPanel {
                         JOptionPane.showMessageDialog(null, "Le role est obligatoire");
                         return;
                     }
-                    conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                     conn.setAutoCommit(false);
                     PreparedStatement pst = conn.prepareStatement("insert into users (username,passwd,role) values(?,?,?)");
                     pst.setString(1, login.toLowerCase());

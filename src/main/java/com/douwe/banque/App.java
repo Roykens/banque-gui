@@ -10,18 +10,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class App {
 
     public static void main(String[] args) throws ClassNotFoundException {
-        try {
-            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.Plastic3DLookAndFeel");
-        } catch (InstantiationException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        lookAndFeel();
         Class.forName("org.sqlite.JDBC");
-        SwingUtilities.invokeLater(new Runnable() {
-
+        SwingUtilities.invokeLater(new Runnable() { 
             public void run() {
                 try {
                     MainFrame frame = new MainFrame();
@@ -33,5 +24,17 @@ public class App {
                 }
             }
         });
+    }
+
+    private static void lookAndFeel() throws ClassNotFoundException {
+        try {
+            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.Plastic3DLookAndFeel");
+        } catch (InstantiationException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
