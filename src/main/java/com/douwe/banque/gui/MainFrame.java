@@ -4,10 +4,11 @@ import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.common.LoginPanel;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.util.MessageHelper;
+import com.douwe.banque.util.ModelDeBaseFrame;
+import com.sun.xml.internal.ws.developer.Serialization;
 import java.awt.BorderLayout;
-import java.sql.Connection;
+import java.beans.Transient;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -19,31 +20,36 @@ import javax.swing.JPanel;
  *
  * @author Vincent Douwe <douwevincent@yahoo.fr>
  */
-public class MainFrame extends JFrame {
+public class MainFrame extends ModelDeBaseFrame {
 
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
-     private final MessageHelper helper = new MessageHelper();
+    @Serialization
+    private final MessageHelper helper = new MessageHelper();
 
-    public MainFrame() {
+    public MainFrame() throws SQLException {
+        super();
         setTitle(helper.getProperty("mainFrame.titre"));
         getContentPane().setLayout(new BorderLayout(10, 10));
         headerPanel = new HeaderPanel() {
             @Override
             public void deconnexion() {
-                Connection conn;
-                contentPanel.removeAll();
-                contentPanel.add(BorderLayout.CENTER, new LoginPanel() {
-                    @Override
-                    public void success() {
-                        contentPanel.removeAll();
-                        contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
-                        contentPanel.validate();
-                        headerPanel.setEnabledHeader(true);
-                    }
-                });
+                baniere();
+                contentPanel.validate();
+            }
+
+            private void baniere() {
                 try {
-                    conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
+                    contentPanel.removeAll();
+                    contentPanel.add(BorderLayout.CENTER, new LoginPanel() {
+                        @Override
+                        public void success() {
+                            contentPanel.removeAll();
+                            contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
+                            contentPanel.validate();
+                            headerPanel.setEnabledHeader(true);
+                        }
+                    });
                     PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
                     pst3.setInt(1, Operation.deconnexion.ordinal());
                     pst3.setDate(2, new Date(new java.util.Date().getTime()));
@@ -54,26 +60,27 @@ public class MainFrame extends JFrame {
                     pst3.close();
                     conn.close();
                 } catch (SQLException ex) {
-                    
                     Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                contentPanel.validate();
             }
         };
         getContentPane().add(headerPanel, BorderLayout.BEFORE_FIRST_LINE);
         contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout());
-        JPanel login = new LoginPanel() {
-            @Override
-            public void success() {
-                contentPanel.removeAll();
-                contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
-                contentPanel.validate();
-                headerPanel.setEnabledHeader(true);
-            }
-        };
-        contentPanel.add(login, BorderLayout.CENTER);
+        try {
+            JPanel login = new LoginPanel() {
+                @Override
+                public void success() {
+                    contentPanel.removeAll();
+                    contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
+                    contentPanel.validate();
+                    headerPanel.setEnabledHeader(true);
+                }
+            };
+            contentPanel.add(login, BorderLayout.CENTER);
+        } catch (SQLException e) {
+            System.err.println("Erreur de Connection à la BD");
+        }
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }

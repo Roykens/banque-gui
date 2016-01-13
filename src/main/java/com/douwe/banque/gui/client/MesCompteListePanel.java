@@ -2,12 +2,11 @@ package com.douwe.banque.gui.client;
 
 import com.douwe.banque.data.AccountType;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Label;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,14 +21,14 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class MesCompteListePanel extends JPanel {
+public class MesCompteListePanel extends ModelDeBasePanel {
 
     private JTable compteTable;
     private DefaultTableModel model;
     private static final String request = "select * from account where customer_id=?";
-    private Connection conn;
 
-    public MesCompteListePanel() {
+    public MesCompteListePanel() throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout(10, 10));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -42,7 +41,6 @@ public class MesCompteListePanel extends JPanel {
             model = new DefaultTableModel(new String[]{"No Compte", "Type Compte", "Balance"}, 0);
             compteTable = new JTable(model);
             add(BorderLayout.CENTER, new JScrollPane(compteTable));
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db", "", "");
             PreparedStatement pStmt = conn.prepareStatement(request);
             pStmt.setInt(1, UserInfo.getCustomerId());
             ResultSet rs = pStmt.executeQuery();

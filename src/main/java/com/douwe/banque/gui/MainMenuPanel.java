@@ -16,7 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Properties;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -96,7 +96,11 @@ public class MainMenuPanel extends JPanel {
         utilisateurs.setText(helper.getProperty("mainMenuPanel.utilisateurs"));
         utilisateurs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new UtilisateurPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new UtilisateurPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         utilisateurs.setUnclickedColor(Color.blue);
@@ -105,7 +109,11 @@ public class MainMenuPanel extends JPanel {
         comptes.setText(helper.getProperty("mainMenuPanel.comptes"));
         comptes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new ComptePanel(MainMenuPanel.this));
+                try {
+                    setContenu(new ComptePanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         comptes.setUnclickedColor(Color.blue);
@@ -119,7 +127,11 @@ public class MainMenuPanel extends JPanel {
         operations.setText(helper.getProperty("mainMenuPanel.operations"));
         operations.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new OperationsPanel());
+                try {
+                    setContenu(new OperationsPanel());
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         operations.setUnclickedColor(Color.blue);
@@ -128,7 +140,11 @@ public class MainMenuPanel extends JPanel {
         customer.setText(helper.getProperty("mainMenuPanel.clients"));
         customer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new ClientPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new ClientPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         customer.setUnclickedColor(Color.blue);
@@ -158,7 +174,11 @@ public class MainMenuPanel extends JPanel {
         debit.setClickedColor(Color.blue);
         debit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new NouveauDebitPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new NouveauDebitPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         employee.add(credit = new JXHyperlink());
@@ -167,7 +187,11 @@ public class MainMenuPanel extends JPanel {
         credit.setClickedColor(Color.blue);
         credit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                setContenu(new NouveauDepotPanel(MainMenuPanel.this));
+                try {
+                    setContenu(new NouveauDepotPanel(MainMenuPanel.this));
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         menu.add(employee);

@@ -4,6 +4,7 @@ import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -11,9 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,15 +28,15 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauDepotPanel extends JPanel {
+public class NouveauDepotPanel extends ModelDeBasePanel {
     
     private JTextField accountText;
     private JTextField amountText;
     private JButton btnEnregistrer;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public NouveauDepotPanel(MainMenuPanel parentFrame) {
+    public NouveauDepotPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         setLayout(new BorderLayout(10, 10));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -74,7 +73,6 @@ public class NouveauDepotPanel extends JPanel {
                         JOptionPane.showMessageDialog(null, "Le montant doit etre un nombre positif");
                         return;
                     }
-                    conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                     PreparedStatement pst1 = conn.prepareStatement("select * from account where accountNumber = ?");
                     pst1.setString(1, account);
                     ResultSet rs = pst1.executeQuery();

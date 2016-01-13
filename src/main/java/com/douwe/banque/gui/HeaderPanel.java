@@ -2,6 +2,7 @@ package com.douwe.banque.gui;
 
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.util.MessageHelper;
+import com.sun.xml.internal.ws.developer.Serialization;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Transient;
 import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,13 +26,12 @@ public abstract class HeaderPanel extends JPanel{
 
     private JXHyperlink deconnexion;
     private JLabel username;
+    @Serialization
     private final MessageHelper helper = new MessageHelper();
     
     public HeaderPanel(){
         setLayout(new FlowLayout(FlowLayout.RIGHT,10,10));        
-        setBackground(new Color(166, 202, 240));
-        //JPanel pan = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
-        //pan.setBorder(new EmptyBorder(0, 0, 0, 10));
+        setBackground(new Color(166, 202, 240)); 
         setPreferredSize(new Dimension(800,180));
         username = new JLabel(helper.getProperty("header.presentation"));
         deconnexion = new JXHyperlink();
@@ -40,8 +41,7 @@ public abstract class HeaderPanel extends JPanel{
         deconnexion.setVisible(false);
         username.setVisible(false);
         add(username);
-        add(deconnexion);
-        //add(BorderLayout.CENTER,pan);
+        add(deconnexion); 
         deconnexion.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {

@@ -2,6 +2,7 @@ package com.douwe.banque.gui.common;
 
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.data.RoleType;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -9,9 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,14 +28,14 @@ import javax.swing.border.EmptyBorder;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class LoginPanel extends JPanel {
+public class LoginPanel extends ModelDeBasePanel {
 
     private JTextField loginText;
     private JPasswordField passwdText;
     private JButton btnLogin;
-    private Connection conn;
 
-    public LoginPanel() {
+    public LoginPanel() throws SQLException{
+        super();
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(80, 350, 80, 300));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -64,7 +63,6 @@ public class LoginPanel extends JPanel {
                         passwdText.setText("");
                         return;
                     }
-                    conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                     PreparedStatement pst = conn.prepareStatement("select * from users where username = ? and status = ?");
                     pst.setString(1, username.toLowerCase());
                     pst.setInt(2, 0);

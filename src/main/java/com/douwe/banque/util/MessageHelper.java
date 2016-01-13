@@ -1,8 +1,5 @@
 package com.douwe.banque.util;
 
-import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
