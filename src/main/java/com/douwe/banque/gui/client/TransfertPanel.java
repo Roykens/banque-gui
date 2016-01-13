@@ -4,6 +4,7 @@ import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -12,8 +13,6 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,16 +29,16 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class TransfertPanel extends JPanel {
+public class TransfertPanel extends ModelDeBasePanel {
 
     private JComboBox<String> source;
     private JTextField destination;
     private JTextField amount;
     private JButton transferBtn;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public TransfertPanel(MainMenuPanel parentFrame) {
+    public TransfertPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout());
             this.parent = parentFrame;
@@ -67,7 +66,6 @@ public class TransfertPanel extends JPanel {
                     } else {
                         try {
                             double value = Double.valueOf(amt);
-                            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                             ResultSet rss;
                             PreparedStatement bst = conn.prepareStatement("select balance from account where accountNumber = ?");
                             bst.setString(1, init);
@@ -137,7 +135,6 @@ public class TransfertPanel extends JPanel {
             });
             add(BorderLayout.CENTER, builder.getPanel());
             source.addItem("");
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             PreparedStatement pst = conn.prepareStatement("select accountNumber from account where customer_id = ?");
             pst.setInt(1, UserInfo.getCustomerId());
             ResultSet rs = pst.executeQuery();

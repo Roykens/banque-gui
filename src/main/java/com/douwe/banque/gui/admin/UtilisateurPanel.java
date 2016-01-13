@@ -3,15 +3,14 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class UtilisateurPanel extends JPanel {
+public class UtilisateurPanel extends ModelDeBasePanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -41,10 +40,10 @@ public class UtilisateurPanel extends JPanel {
     private JComboBox<RoleType> role;
     private JTable utilisateurTable;
     private DefaultTableModel tableModel;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public UtilisateurPanel(MainMenuPanel parentFrame) {
+    public UtilisateurPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout());
             this.parent = parentFrame;
@@ -77,7 +76,6 @@ public class UtilisateurPanel extends JPanel {
                             query.append("and role = ");
                             query.append(roleN.ordinal());
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pst = conn.prepareStatement(query.toString());
                         pst.setInt(1, 0);
                         ResultSet rs = pst.executeQuery();
@@ -105,7 +103,11 @@ public class UtilisateurPanel extends JPanel {
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauUtilisateurPanel(parent));
+                    try {
+                        parent.setContenu(new NouveauUtilisateurPanel(parent));
+                    } catch (SQLException ex) {
+                        Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
             initialiserPasswdBtn.addActionListener(new ActionListener() {
@@ -113,7 +115,6 @@ public class UtilisateurPanel extends JPanel {
                     int selected = utilisateurTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                             PreparedStatement pst = conn.prepareStatement("update users set passwd = ? where id = ?");
                             pst.setString(1, "admin");
                             pst.setInt(2, (Integer) tableModel.getValueAt(selected, 0));
@@ -142,7 +143,6 @@ public class UtilisateurPanel extends JPanel {
                     int selected = utilisateurTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                             conn.setAutoCommit(false);
                             PreparedStatement pst = conn.prepareStatement("update users set status = ? where id = ?");
                             pst.setInt(1, 1);
@@ -199,7 +199,6 @@ public class UtilisateurPanel extends JPanel {
             utilisateurTable.removeColumn(utilisateurTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(utilisateurTable));
             add(BorderLayout.CENTER, contenu);
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             PreparedStatement pst = conn.prepareStatement("select * from users where status = ?");
             pst.setInt(1, 0);
             ResultSet rs = pst.executeQuery();

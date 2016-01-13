@@ -3,6 +3,7 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.AccountType;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -10,9 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +28,7 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauComptePanel extends JPanel {
+public class NouveauComptePanel extends ModelDeBasePanel {
 
     private JTextField numberText;
     private JTextField balanceText;
@@ -37,16 +36,14 @@ public class NouveauComptePanel extends JPanel {
     private JTextField customerText;
     private JButton btnEnregistrer;
     private int id = -1;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) {
+    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) throws SQLException {
         this(parentFrame);
         this.id = account_id;
         if (this.id > 0) {
             btnEnregistrer.setText("Modifier");
             try {
-                conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                 PreparedStatement pst = conn.prepareStatement("select account.*, customer.name  from account, customer where account.id = ? and account.customer_id = customer.id");
                 pst.setInt(1, id);
                 ResultSet rs = pst.executeQuery();
@@ -74,7 +71,8 @@ public class NouveauComptePanel extends JPanel {
         }
     }
 
-    public NouveauComptePanel(MainMenuPanel parentFrame) {
+    public NouveauComptePanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         this.parent = parentFrame;
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -106,7 +104,6 @@ public class NouveauComptePanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le type du compte n'est pas specifie");
                             return;
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pst = conn.prepareStatement("update account set type=? , accountNumber=? where id =?");
                         pst.setInt(1, type.ordinal());
                         pst.setString(2, number);
@@ -154,7 +151,6 @@ public class NouveauComptePanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le solde compte doit être un nombre positif");
                             return;
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pst = conn.prepareStatement("select id from customer where name = ?");
                         pst.setString(1, customer);
                         ResultSet rs = pst.executeQuery();

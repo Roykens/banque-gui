@@ -2,13 +2,13 @@ package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class ClientPanel extends JPanel {
+public class ClientPanel extends ModelDeBasePanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -38,10 +38,10 @@ public class ClientPanel extends JPanel {
     private JTable clientTable;
     private DefaultTableModel tableModel;
     private JTextField nameText;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public ClientPanel(MainMenuPanel parentFrame) {
+    public ClientPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout());
             this.parent = parentFrame;
@@ -64,7 +64,6 @@ public class ClientPanel extends JPanel {
                     String name = nameText.getText();
                     //if ((name != null) && !("".equals(name))) {
                     try {
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pst = conn.prepareStatement("select * from customer where status = ? and name like ?");
                         pst.setInt(1, 0);
                         pst.setString(2, "%" + name + "%");
@@ -96,14 +95,22 @@ public class ClientPanel extends JPanel {
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauClientPanel(parent));
+                    try {
+                        parent.setContenu(new NouveauClientPanel(parent));
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
-                        parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        try {
+                            parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        } catch (SQLException ex) {
+                            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun client n'est selectionné");
                     }
@@ -114,7 +121,6 @@ public class ClientPanel extends JPanel {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                             conn.setAutoCommit(false);
                             PreparedStatement psmt = conn.prepareStatement("update customer set status = ? where id = ?");
                             psmt.setInt(1, 1);
@@ -165,7 +171,6 @@ public class ClientPanel extends JPanel {
             clientTable.removeColumn(clientTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(clientTable));
             add(BorderLayout.CENTER, contenu);
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             PreparedStatement pst = conn.prepareStatement("select * from customer where status = ?");
             pst.setInt(1, 0);
             ResultSet rs = pst.executeQuery();

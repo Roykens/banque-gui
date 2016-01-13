@@ -2,6 +2,7 @@ package com.douwe.banque.gui.client;
 
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -9,8 +10,6 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +30,7 @@ import org.jdesktop.swingx.JXDatePicker;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class MesOperationsListePanel extends JPanel {
+public class MesOperationsListePanel extends ModelDeBasePanel {
 
     private JComboBox<String> comptes;
     private JComboBox<String> operations;
@@ -41,9 +40,9 @@ public class MesOperationsListePanel extends JPanel {
     private DefaultTableModel tableModel;
     private JButton filtreBtn;
     private final String accountQuery = "select accountNumber from account where customer_id=?";
-    private Connection conn;
 
-    public MesOperationsListePanel() {
+    public MesOperationsListePanel() throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout());
             JPanel hautPanel = new JPanel(new GridLayout(2, 1));
@@ -106,7 +105,6 @@ public class MesOperationsListePanel extends JPanel {
                             builder.append(fin.getTime());
                             builder.append("'");
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pStat = conn.prepareStatement(builder.toString());
                         pStat.setInt(1, UserInfo.getUserId());
                         ResultSet rs = pStat.executeQuery();
@@ -134,7 +132,6 @@ public class MesOperationsListePanel extends JPanel {
                 }
             });
             comptes.addItem("");
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             PreparedStatement st2 = conn.prepareStatement(accountQuery);
             st2.setInt(1, UserInfo.getCustomerId());
             ResultSet rs2 = st2.executeQuery();

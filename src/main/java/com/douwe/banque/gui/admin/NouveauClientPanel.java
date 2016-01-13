@@ -3,6 +3,7 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -10,9 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauClientPanel extends JPanel {
+public class NouveauClientPanel extends ModelDeBasePanel {
 
     private JTextField nameText;
     private JTextField emailText;
@@ -36,14 +35,12 @@ public class NouveauClientPanel extends JPanel {
     private JButton btnEnregistrer;
     private int id = -1;
     private MainMenuPanel parent;
-    private Connection conn;
 
-    public NouveauClientPanel(MainMenuPanel parentFrame, int id) {
+    public NouveauClientPanel(MainMenuPanel parentFrame, int id) throws SQLException {
         this(parentFrame);
         this.id = id;
         if (id > 0) {
             try {
-                conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                 PreparedStatement ps = conn.prepareStatement("select * from customer where id = ?");
                 ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
@@ -68,7 +65,8 @@ public class NouveauClientPanel extends JPanel {
         }
     }
 
-    public NouveauClientPanel(MainMenuPanel parentFrame) {
+    public NouveauClientPanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         this.parent = parentFrame;
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -101,7 +99,6 @@ public class NouveauClientPanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le numéro de téléphone est obligatoire");
                             return;
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         conn.setAutoCommit(false);
                         PreparedStatement pst = conn.prepareStatement("insert into customer(name,emailAddress, phoneNumber, user_id) values (?,?,?,?)");
                         PreparedStatement st = conn.prepareStatement("insert into users(username, passwd, role) values (?,?,?)");
@@ -162,7 +159,6 @@ public class NouveauClientPanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le numéro de téléphone est obligatoire");
                             return;
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pst = conn.prepareStatement("update customer set name =?, emailAddress=?, phoneNumber=? where id = ?");
                         pst.setString(1, name);
                         pst.setString(2, email);

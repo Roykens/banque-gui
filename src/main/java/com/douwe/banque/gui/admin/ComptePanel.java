@@ -3,15 +3,14 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.AccountType;
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class ComptePanel extends JPanel {
+public class ComptePanel extends ModelDeBasePanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -42,10 +41,10 @@ public class ComptePanel extends JPanel {
     private JTextField nameText;
     private JTextField numberText;
     private JComboBox<AccountType> type;
-    private Connection conn;
     private MainMenuPanel parent;
 
-    public ComptePanel(MainMenuPanel parentFrame) {
+    public ComptePanel(MainMenuPanel parentFrame) throws SQLException {
+        super();
         try {
             this.parent = parentFrame;
             setLayout(new BorderLayout());
@@ -84,7 +83,6 @@ public class ComptePanel extends JPanel {
                             query.append("and type = ");
                             query.append(ty.ordinal());
                         }
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement st = conn.prepareStatement(query.toString());
                         st.setInt(1, 0);
                         ResultSet rs = st.executeQuery();
@@ -116,14 +114,22 @@ public class ComptePanel extends JPanel {
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauComptePanel(parent));
+                    try {
+                        parent.setContenu(new NouveauComptePanel(parent));
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
-                        parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        try {
+                            parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        } catch (SQLException ex) {
+                            Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun compte selectionné");
                     }
@@ -135,7 +141,6 @@ public class ComptePanel extends JPanel {
                     if (selected >= 0) {
                         try {
                             String accountNumber = (String) tableModel.getValueAt(selected, 1);
-                            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                             conn.setAutoCommit(false);
                             PreparedStatement pst = conn.prepareStatement("update account set status = ? where accountNumber = ?");
                             pst.setInt(1, 1);
@@ -199,7 +204,6 @@ public class ComptePanel extends JPanel {
             compteTable.removeColumn(compteTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(compteTable));
             add(BorderLayout.CENTER, contenu);
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             PreparedStatement pst = conn.prepareStatement("select account.*, customer.name from account, customer where account.customer_id = customer.id and account.status = ?");
             pst.setInt(1, 0);
             ResultSet rs = pst.executeQuery();

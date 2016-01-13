@@ -2,14 +2,13 @@ package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.Operation;
 import com.douwe.banque.gui.client.MesOperationsListePanel;
+import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +31,7 @@ import org.jdesktop.swingx.JXDatePicker;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class OperationsPanel extends JPanel {
+public class OperationsPanel extends ModelDeBasePanel {
 
     private JTable operationTable;
     private DefaultTableModel tableModel;
@@ -42,9 +41,9 @@ public class OperationsPanel extends JPanel {
     private JButton filtreBtn;
     private JXDatePicker startDate;
     private JXDatePicker endDate;
-    private Connection conn;
 
-    public OperationsPanel() {
+    public OperationsPanel() throws SQLException {
+        super();
         try {
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
@@ -92,7 +91,6 @@ public class OperationsPanel extends JPanel {
                             builder.append("'");
                         }
                         System.out.println("ddd ddd " + builder.toString());
-                        conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
                         PreparedStatement pStat = conn.prepareStatement(builder.toString());
                         ResultSet rs = pStat.executeQuery();
                         tableModel.setNumRows(0);
@@ -142,7 +140,6 @@ public class OperationsPanel extends JPanel {
             operationTable = new JTable(tableModel);
             contenu.add(BorderLayout.CENTER, new JScrollPane(operationTable));
             add(BorderLayout.CENTER, contenu);
-            conn = DriverManager.getConnection("jdbc:sqlite:banque.db");
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("select operations.*, account.accountNumber, users.username from operations, account, users where account.id = operations.account_id and users.id = operations.user_id");
             while (rs.next()) {
