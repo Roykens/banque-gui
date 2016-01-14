@@ -1,6 +1,7 @@
 package com.douwe.banque.model;
 
 import com.douwe.banque.data.RoleType;
+import java.util.Objects;
 
 /**
  * Cette classe représente un utilisateur du système.
@@ -71,5 +72,44 @@ public class User {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "User{" + "id=" + id + ", login=" + login + ", password=" + password + ", role=" + role + ", status=" + status + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.login, other.login)) {
+            return false;
+        }
+        if (!Objects.equals(this.password, other.password)) {
+            return false;
+        }
+        if (this.role != other.role) {
+            return false;
+        }
+        if (this.status != other.status) {
+            return false;
+        }
+        return true;
+    }
+    
     
 }

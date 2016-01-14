@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
 public class BanqueClientServiceImpl implements IBanqueClientService{
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     public BanqueClientServiceImpl() {
         daoFactory = new DaoFactory();
