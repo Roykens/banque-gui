@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.client;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
@@ -87,7 +87,7 @@ public class TransfertPanel extends ModelDeBasePanel {
                                         dtst.setDouble(1, value);
                                         dtst.setString(2, init);
                                         dtst.executeUpdate();
-                                        op1st.setInt(1, Operation.transfer.ordinal());
+                                        op1st.setInt(1, OperationType.transfer.ordinal());
                                         op1st.setDate(2, new java.sql.Date(new Date().getTime()));
                                         op1st.setString(3, "Transfert de " + amt + " du compte " + init + " vers compte le " + dest);
                                         op1st.setInt(4, rss.getInt("id"));

@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.admin;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
@@ -86,7 +86,7 @@ public class NouveauDebitPanel extends ModelDeBasePanel {
                             pst2.setDouble(1, amount);
                             pst2.setString(2, account);
                             pst2.executeUpdate();
-                            pst3.setInt(1, Operation.debit.ordinal());
+                            pst3.setInt(1, OperationType.debit.ordinal());
                             pst3.setDate(2, new Date(new java.util.Date().getTime()));
                             pst3.setString(3, "Debit de " + amount + " du compte " + account);
                             pst3.setInt(4, rs.getInt("id"));

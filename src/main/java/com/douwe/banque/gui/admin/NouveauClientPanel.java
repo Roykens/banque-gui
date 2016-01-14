@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.admin;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.util.ModelDeBasePanel;
@@ -115,13 +115,13 @@ public class NouveauClientPanel extends ModelDeBasePanel {
                             pst.setInt(4, rrr.getInt(1));
                             pst.executeUpdate();
                             PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, Operation.ajout.ordinal());
+                            pst3.setInt(1, OperationType.ajout.ordinal());
                             pst3.setDate(2, new Date(new java.util.Date().getTime()));
                             pst3.setString(3, "Ajout du client " + name);
                             pst3.setInt(4, 1);
                             pst3.setInt(5, 1);
                             pst3.executeUpdate();
-                            pst3.setInt(1, Operation.ajout.ordinal());
+                            pst3.setInt(1, OperationType.ajout.ordinal());
                             pst3.setDate(2, new Date(new java.util.Date().getTime()));
                             pst3.setString(3, "Ajout de l'utilisateur " + val);
                             pst3.setInt(4, 1);

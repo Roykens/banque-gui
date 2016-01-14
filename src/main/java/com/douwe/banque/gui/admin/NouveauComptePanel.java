@@ -1,7 +1,7 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.AccountType;
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -166,7 +166,7 @@ public class NouveauComptePanel extends ModelDeBasePanel {
                             st.executeUpdate();
                             st.close();
                             PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, Operation.ouverture.ordinal());
+                            pst3.setInt(1, OperationType.ouverture.ordinal());
                             pst3.setDate(2, new Date(new java.util.Date().getTime()));
                             pst3.setString(3, "Ouverture du compte " + number);
                             pst3.setInt(4, 1);

@@ -1,7 +1,7 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.AccountType;
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
@@ -146,7 +146,7 @@ public class ComptePanel extends ModelDeBasePanel {
                             pst.setInt(1, 1);
                             pst.setString(2, accountNumber);
                             PreparedStatement st = conn.prepareStatement("insert into operations(operationType,dateOperation,description,account_id, user_id) values(?,?,?,?,?)");
-                            st.setInt(1, Operation.cloture.ordinal());
+                            st.setInt(1, OperationType.cloture.ordinal());
                             st.setDate(2, new Date(new java.util.Date().getTime()));
                             st.setString(3, "Cloture du compte " + accountNumber);
                             st.setInt(4, (Integer) tableModel.getValueAt(selected, 0));

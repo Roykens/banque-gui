@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.admin;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.client.MesOperationsListePanel;
 import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
@@ -37,7 +37,7 @@ public class OperationsPanel extends ModelDeBasePanel {
     private DefaultTableModel tableModel;
     private JTextField clientText;
     private JTextField compteText;
-    private JComboBox<Operation> type;
+    private JComboBox<OperationType> type;
     private JButton filtreBtn;
     private JXDatePicker startDate;
     private JXDatePicker endDate;
@@ -60,7 +60,7 @@ public class OperationsPanel extends ModelDeBasePanel {
                 public void actionPerformed(ActionEvent ae) {
                     try {
                         String selectedCompte = compteText.getText();
-                        Operation selectedOperation = (Operation) type.getSelectedItem();
+                        OperationType selectedOperation = (OperationType) type.getSelectedItem();
                         String client = clientText.getText();
                         Date debut = startDate.getDate();
                         Date fin = endDate.getDate();
@@ -95,7 +95,7 @@ public class OperationsPanel extends ModelDeBasePanel {
                         ResultSet rs = pStat.executeQuery();
                         tableModel.setNumRows(0);
                         while (rs.next()) {
-                            tableModel.addRow(new Object[]{Operation.values()[rs.getInt("operationType")],
+                            tableModel.addRow(new Object[]{OperationType.values()[rs.getInt("operationType")],
                                 rs.getString("accountNumber"),
                                 rs.getDate("dateOperation"),
                                 rs.getString("username"),
@@ -124,11 +124,11 @@ public class OperationsPanel extends ModelDeBasePanel {
             filtrePanel.add(compteText = new JTextField());
             compteText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel("Type Opération"));
-            filtrePanel.add(type = new JComboBox<Operation>());
+            filtrePanel.add(type = new JComboBox<OperationType>());
             type.setPreferredSize(new Dimension(100, 25));
             type.addItem(null);
-            for (int i = 0; i < Operation.values().length; i++) {
-                type.addItem(Operation.values()[i]);
+            for (int i = 0; i < OperationType.values().length; i++) {
+                type.addItem(OperationType.values()[i]);
             }
             filtrePanel.add(new JLabel("Début"));
             filtrePanel.add(startDate = new JXDatePicker());
@@ -143,7 +143,7 @@ public class OperationsPanel extends ModelDeBasePanel {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("select operations.*, account.accountNumber, users.username from operations, account, users where account.id = operations.account_id and users.id = operations.user_id");
             while (rs.next()) {
-                tableModel.addRow(new Object[]{Operation.values()[rs.getInt("operationType")],
+                tableModel.addRow(new Object[]{OperationType.values()[rs.getInt("operationType")],
                     rs.getString("accountNumber"),
                     rs.getDate("dateOperation"),
                     rs.getString("username"),

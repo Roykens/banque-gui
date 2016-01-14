@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.client;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
@@ -57,10 +57,10 @@ public class MesOperationsListePanel extends ModelDeBasePanel {
             comptes = new JComboBox<String>();
             operations = new JComboBox<String>();
             operations.addItem("");
-            operations.addItem(Operation.credit.toString());
-            operations.addItem(Operation.debit.toString());
-            operations.addItem(Operation.transfer.toString());
-            operations.addItem(Operation.cloture.toString());
+            operations.addItem(OperationType.credit.toString());
+            operations.addItem(OperationType.debit.toString());
+            operations.addItem(OperationType.transfer.toString());
+            operations.addItem(OperationType.cloture.toString());
             startDate = new JXDatePicker();
             endDate = new JXDatePicker();
             filtrePanel.add(new JLabel("Compte"));
@@ -91,7 +91,7 @@ public class MesOperationsListePanel extends ModelDeBasePanel {
                             builder.append("'");
                         }
                         if ((selectedOperation != null) && !("".equals(selectedOperation))) {
-                            int index = Operation.valueOf(selectedOperation).ordinal();
+                            int index = OperationType.valueOf(selectedOperation).ordinal();
                             builder.append(" and operationType = ");
                             builder.append(index);
                         }
@@ -110,7 +110,7 @@ public class MesOperationsListePanel extends ModelDeBasePanel {
                         ResultSet rs = pStat.executeQuery();
                         tableModel.setNumRows(0);
                         while (rs.next()) {
-                            tableModel.addRow(new Object[]{Operation.values()[rs.getInt("operationType")],
+                            tableModel.addRow(new Object[]{OperationType.values()[rs.getInt("operationType")],
                                 rs.getString("accountNumber"),
                                 rs.getDate("dateOperation"),
                                 rs.getString("username"),

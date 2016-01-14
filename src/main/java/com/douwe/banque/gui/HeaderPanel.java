@@ -2,7 +2,6 @@ package com.douwe.banque.gui;
 
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.util.MessageHelper;
-import com.sun.xml.internal.ws.developer.Serialization;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -26,7 +25,6 @@ public abstract class HeaderPanel extends JPanel{
 
     private JXHyperlink deconnexion;
     private JLabel username;
-    @Serialization
     private final MessageHelper helper = new MessageHelper();
     
     public HeaderPanel(){

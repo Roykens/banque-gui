@@ -1,6 +1,6 @@
 package com.douwe.banque.gui.common;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -85,7 +85,7 @@ public class LoginPanel extends ModelDeBasePanel {
 
                             }
                             PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, Operation.connexion.ordinal());
+                            pst3.setInt(1, OperationType.connexion.ordinal());
                             pst3.setDate(2, new Date(new java.util.Date().getTime()));
                             pst3.setString(3, "Connection de l'utilisateur " + username);
                             pst3.setInt(4, 1);

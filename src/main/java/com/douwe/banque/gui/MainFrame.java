@@ -1,11 +1,10 @@
 package com.douwe.banque.gui;
 
-import com.douwe.banque.data.Operation;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.common.LoginPanel;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.util.MessageHelper;
 import com.douwe.banque.util.ModelDeBaseFrame;
-import com.sun.xml.internal.ws.developer.Serialization;
 import java.awt.BorderLayout;
 import java.beans.Transient;
 import java.sql.Date;
@@ -24,7 +23,6 @@ public class MainFrame extends ModelDeBaseFrame {
 
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
-    @Serialization
     private final MessageHelper helper = new MessageHelper();
 
     public MainFrame() throws SQLException {
@@ -51,7 +49,7 @@ public class MainFrame extends ModelDeBaseFrame {
                         }
                     });
                     PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                    pst3.setInt(1, Operation.deconnexion.ordinal());
+                    pst3.setInt(1, OperationType.deconnexion.ordinal());
                     pst3.setDate(2, new Date(new java.util.Date().getTime()));
                     pst3.setString(3, helper.getProperty("mainFrame.deconnecteUtilisateur") + UserInfo.getUsername());
                     pst3.setInt(4, 1);
