@@ -1,6 +1,7 @@
 package com.douwe.banque.dao;
 
 
+import com.douwe.banque.model.Account;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.User;
 import java.util.List;
@@ -65,4 +66,13 @@ public interface ICustomerDao {
      * @throws DataAccessException si un événement non prévu survient
      */
     public Customer findByName(String name)  throws DataAccessException;
+    
+    
+    /**
+     * recherche un client suivant son compte
+     * @param account le compte 
+     * @return le client dont le compte  est passé en paramètre
+     * @throws DataAccessException si un événement non prévu survient
+     */
+    public Customer findByAccount(Account account) throws DataAccessException;
 }

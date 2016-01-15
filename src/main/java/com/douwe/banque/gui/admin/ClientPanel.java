@@ -2,6 +2,10 @@ package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.model.Customer;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -14,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -29,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class ClientPanel extends ModelDeBasePanel {
+public class ClientPanel  extends JPanel{
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -39,10 +44,12 @@ public class ClientPanel extends ModelDeBasePanel {
     private DefaultTableModel tableModel;
     private JTextField nameText;
     private MainMenuPanel parent;
+    private IBanqueAdminService adminService;
 
-    public ClientPanel(MainMenuPanel parentFrame) throws SQLException {
-        super();
+    public ClientPanel(MainMenuPanel parentFrame){
+       // super();
         try {
+            adminService = new BanqueAdminServiceImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel haut = new JPanel();
@@ -62,55 +69,37 @@ public class ClientPanel extends ModelDeBasePanel {
             filtreBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    selectCustomerbyStatus(); 
-                    if (conn != null) {
-                        closeConnection();
-                    }
+                    selectCustomerbyStatus();
                 }
 
                 private void selectCustomerbyStatus() throws HeadlessException {
                     String name = nameText.getText();
                     try {
-                        PreparedStatement pst = conn.prepareStatement("select * from customer where status = ? and name like ?");
-                        pst.setInt(1, 0);
-                        pst.setString(2, "%" + name + "%");
-                        ResultSet rs = pst.executeQuery();
-                        tableModel.setRowCount(0);
-                        while (rs.next()) {
-                            tableModel.addRow(new Object[]{rs.getInt("id"),
-                                rs.getString("name"),
-                                rs.getString("emailAddress"),
-                                rs.getString("phoneNumber")
-                            });
-                        }
-                        rs.close();
-                        pst.close();
-                        conn.close();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Impossible de filtrer vos données");
+                        List<Customer> customers = adminService.findCustomerByName(name);                            
+                            tableModel.setRowCount(0);
+                            for (Customer customer : customers) {                                
+                                tableModel.addRow(new Object[]{customer.getId(),
+                                    customer.getName(),
+                                    customer.getEmailAddress(),
+                                    customer.getPhoneNumber()
+                                });
+                            }
+                    } catch (ServiceException ex) {
                         Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    try {
-                        parent.setContenu(new NouveauClientPanel(parent));
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    parent.setContenu(new NouveauClientPanel(parent));
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
-                    if (selected >= 0) {
-                        try {
-                            parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
-                        } catch (SQLException ex) {
-                            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                    if (selected >= 0) {                      
+                            parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));                       
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun client n'est selectionné");
                     }
@@ -121,33 +110,23 @@ public class ClientPanel extends ModelDeBasePanel {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            conn.setAutoCommit(false);
-                            PreparedStatement psmt = conn.prepareStatement("update customer set status = ? where id = ?");
-                            psmt.setInt(1, 1);
-                            psmt.setInt(2, (Integer) tableModel.getValueAt(selected, 0));
-                            if (psmt.executeUpdate() > 0) {
-                                tableModel.removeRow(selected);
-                            }
-                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, OperationType.suppression.ordinal());
-                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                            pst3.setString(3, "Suppression du client " + tableModel.getValueAt(selected, 1));
-                            pst3.setInt(4, 1);
-                            pst3.setInt(5, 1);
-                            pst3.executeUpdate();
-                            pst3.close();
-                            psmt.close();
-                            conn.commit();
-                            conn.close();
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(null, "Erreur lors de la suppression du client " + tableModel.getValueAt(selected, 1));
+                            adminService.deleteCustomer((Integer)tableModel.getValueAt(selected, 0));                            
+                            tableModel.removeRow(selected);
+//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
+//                            pst3.setInt(1, OperationType.suppression.ordinal());
+//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
+//                            pst3.setString(3, "Suppression du client " + tableModel.getValueAt(selected, 1));
+//                            pst3.setInt(4, 1);
+//                            pst3.setInt(5, 1);
+//                            pst3.executeUpdate();
+//                            pst3.close();
+//                            conn.commit();
+//                            conn.close();
+                        } catch (ServiceException ex) {
                             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucune donnée n'est selectionnée");
-                    }
-                    if (conn != null) {
-                        closeConnection();
                     }
                 }
             });
@@ -167,32 +146,18 @@ public class ClientPanel extends ModelDeBasePanel {
             clientTable.removeColumn(clientTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(clientTable));
             add(BorderLayout.CENTER, contenu);
-            PreparedStatement pst = conn.prepareStatement("select * from customer where status = ?");
-            pst.setInt(1, 0);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                tableModel.addRow(new Object[]{rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getString("emailAddress"),
-                    rs.getString("phoneNumber")
+            List<Customer> customers = adminService.findAllCustomer();
+            for (Customer customer : customers) {
+                tableModel.addRow(new Object[]{customer.getId(),
+                    customer.getName(),
+                    customer.getEmailAddress(),
+                    customer.getPhoneNumber()
                 });
             }
-            rs.close();
-            pst.close();
-            conn.close();
-        } catch (SQLException ex) {
+        } catch (ServiceException ex) {
             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (conn != null) {
-            closeConnection();
         }
     }
 
-    private void closeConnection() {
-        try {
-            conn.close();
-        } catch (SQLException ex1) {
-            Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex1);
-        }
-    }
+  
 }

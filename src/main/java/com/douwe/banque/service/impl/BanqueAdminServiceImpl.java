@@ -5,12 +5,15 @@ import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.IAccountDao;
 import com.douwe.banque.dao.ICustomerDao;
 import com.douwe.banque.dao.IUserDao;
+import com.douwe.banque.data.AccountType;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
+import com.douwe.banque.model.projection.AccountCustomer;
+import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.ServiceException;
 import java.util.ArrayList;
@@ -40,16 +43,7 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
         }
     }
     
-    @Override
-    public Customer findCustomerByLogin(String login) throws ServiceException {
-        try {
-            User user = daoFactory.getUserDao().findByLogin(login);
-            return daoFactory.getCustomerDao().findByUser(user);
-        } catch (DataAccessException ex) {
-            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServiceException(ex);
-        }
-    }
+
     
      @Override
     public User findUserByLogin(String login) throws ServiceException {
@@ -61,15 +55,7 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
         }
     }
     
-    @Override
-    public void saveOperation(Operation op) throws ServiceException {
-        try {
-            daoFactory.getOperationDao().save(op);
-        } catch (DataAccessException ex) {
-            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServiceException(ex);
-        }
-    }
+
     
     @Override
     public Account findAccountByNumber(String accountNumber) throws ServiceException {
@@ -327,4 +313,107 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
         }
 
     }
+
+    @Override
+    public List<AccountCustomer> findAccountByCriteria(String customerName, String accountNumber, AccountType type) throws ServiceException {
+        List<AccountCustomer> result = new ArrayList<>();
+        try {
+            for (Account account : daoFactory.getAccountDao().findAll()) {
+                if ((customerName.isEmpty() || (account.getCustomer().getName().toLowerCase().contains(customerName.toLowerCase())))
+                        && (accountNumber.isEmpty() || (account.getAccountNumber().toLowerCase().contains(accountNumber.toLowerCase())))
+                        && ((type == null) || (account.getType() == type))
+                        && (account.getStatus() == 0)) {
+                    result.add(new AccountCustomer(account.getCustomer().getName(), account));
+                }
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public List<AccountOperation> findOperationByCriteria(String accountNumber, String userName, OperationType opType, Date debut, Date fin) throws ServiceException {
+        List<AccountOperation> result = new ArrayList<>();
+        try {
+            for (Operation operation : daoFactory.getOperationDao().findAll()) {
+                if((userName.isEmpty() || operation.getUser().getLogin().toLowerCase().contains(userName.toLowerCase()))
+                        && (accountNumber.isEmpty() || operation.getAccount().getAccountNumber().toLowerCase().contains(accountNumber.toLowerCase()))
+                        && ((opType == null) || operation.getType() == opType)
+                        && ((debut == null) || operation.getDateOperation().after(debut))
+                        && ((fin == null) || operation.getDateOperation().before(fin)))
+                    result.add(new AccountOperation(operation.getUser().getLogin(), operation.getAccount().getAccountNumber(), operation));
+            }
+            
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public List<AccountOperation> findAllOperations() throws ServiceException {
+        List<AccountOperation> result = new ArrayList<>();
+        try {            
+            for (Operation operation : daoFactory.getOperationDao().findAll()) {
+                result.add(new AccountOperation(operation.getUser().getLogin(), operation.getAccount().getAccountNumber(), operation));
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public List<AccountCustomer> findAllAccountCustomer() throws ServiceException {
+        List<AccountCustomer> result = new ArrayList<>();
+        try {
+            List<Account> accounts = daoFactory.getAccountDao().findAll();
+            for (Account account : accounts) {
+                if (account.getStatus() == 0) {
+                    AccountCustomer a = new AccountCustomer(account.getCustomer().getName(), account);
+                    result.add(a);
+                }
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public AccountCustomer findAccountCustomerById(int id) throws ServiceException {
+        try {
+            Account acc = daoFactory.getAccountDao().findById(id);
+            if (acc != null) {
+                return new AccountCustomer(acc.getCustomer().getName(), acc);
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return null;
+    }
+
+    @Override
+    public List<AccountOperation> findOperationFromCustomerAccounts(int customerId) throws ServiceException {
+         List<AccountOperation> result = new ArrayList<>();
+        try {  
+            Customer customer = daoFactory.getCustomerDao().findById(customerId);
+            List<Operation> ops = daoFactory.getOperationDao().findForCustomer(customer);        
+            for (Operation operation : ops) {
+                result.add(new AccountOperation(operation.getUser().getLogin(), operation.getAccount().getAccountNumber(), operation));
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+    
+    
 }

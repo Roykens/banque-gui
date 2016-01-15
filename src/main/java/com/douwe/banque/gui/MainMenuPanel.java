@@ -140,11 +140,9 @@ public class MainMenuPanel extends JPanel {
         customer.setText(helper.getProperty("mainMenuPanel.clients"));
         customer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+              
                     setContenu(new ClientPanel(MainMenuPanel.this));
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+               
             }
         });
         customer.setUnclickedColor(Color.blue);

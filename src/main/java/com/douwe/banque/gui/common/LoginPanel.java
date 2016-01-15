@@ -2,6 +2,12 @@ package com.douwe.banque.gui.common;
 
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
+import com.douwe.banque.model.Customer;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.User;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.ModelDeBasePanel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -33,9 +39,11 @@ public class LoginPanel extends ModelDeBasePanel {
     private JTextField loginText;
     private JPasswordField passwdText;
     private JButton btnLogin;
+    private IBanqueCommonService commonService;
 
     public LoginPanel() throws SQLException{
         super();
+        commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(80, 350, 80, 300));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -63,59 +71,42 @@ public class LoginPanel extends ModelDeBasePanel {
                         passwdText.setText("");
                         return;
                     }
-                    PreparedStatement pst = conn.prepareStatement("select * from users where username = ? and status = ?");
-                    pst.setString(1, username.toLowerCase());
-                    pst.setInt(2, 0);
-                    ResultSet rs = pst.executeQuery();
-                    if (rs.next()) {
-                        if (passwd.equals(rs.getString("passwd"))) {
-                            UserInfo.setUsername(username);
-                            UserInfo.setRole(RoleType.values()[rs.getInt("role")]);
-                            UserInfo.setUserId(rs.getInt("id"));
-                            UserInfo.setLogged(true);
-                            if (UserInfo.getRole().equals(RoleType.customer)) {
-                                PreparedStatement pp = conn.prepareStatement("select customer.id from users, customer where users.id = customer.user_id and username = ?");
-                                pp.setString(1, username.toLowerCase());
-                                ResultSet dd = pp.executeQuery();
-                                if (dd.next()) {
-                                    UserInfo.setCustomerId(dd.getInt(1));
-                                }
-                                dd.close();
-                                pp.close();
-
-                            }
-                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, OperationType.connexion.ordinal());
-                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                            pst3.setString(3, "Connection de l'utilisateur " + username);
-                            pst3.setInt(4, 1);
-                            pst3.setInt(5, 1);
-                            pst3.executeUpdate();
-                            pst3.close();
-                            success();
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login ou mot de passe incorrect");
-                            passwdText.setText("");
+                    User user = commonService.login(username, passwd);
+                    if (user != null) {
+                        UserInfo.setUsername(username);
+                        UserInfo.setRole(user.getRole());
+                        UserInfo.setUserId((int)user.getId());
+                        UserInfo.setLogged(true);
+                        if (UserInfo.getRole().equals(RoleType.customer)) {
+                            Customer customer = commonService.findCustomerByLogin(username);
+                            UserInfo.setCustomerId(customer.getId());
                         }
+                        Operation operation = new Operation();
+                        operation.setAccount(null);
+                        operation.setDateOperation(new Date(new java.util.Date().getTime()));
+                        operation.setDescription(username);
+                        operation.setType(OperationType.connexion);
+                        operation.setUser(user);
+//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
+//                            pst3.setInt(1, OperationType.connexion.ordinal());
+//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
+//                            pst3.setString(3, "Connection de l'utilisateur " + username);
+//                            pst3.setInt(4, 1);
+//                            pst3.setInt(5, 1);
+//                            pst3.executeUpdate();
+//                            pst3.close();
+                            success();
+                        
                     } else {
                         JOptionPane.showMessageDialog(null, "Login ou mot de passe incorrect");
                         passwdText.setText("");
                     }
-                    rs.close();
-                    pst.close();
-                    conn.close();
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Impossible de vérifier vos coordonnées");
-                    passwdText.setText("");
+                  
+                  //  conn.close();
+                } catch (ServiceException ex) {
                     Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex1) {
-                        Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                    }
-                }
+              
             }
         });
     }

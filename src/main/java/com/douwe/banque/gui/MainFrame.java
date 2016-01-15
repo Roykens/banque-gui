@@ -7,6 +7,7 @@ import com.douwe.banque.util.MessageHelper;
 import com.douwe.banque.util.ModelDeBaseFrame;
 import java.awt.BorderLayout;
 import java.beans.Transient;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,13 +20,13 @@ import javax.swing.JPanel;
  *
  * @author Vincent Douwe <douwevincent@yahoo.fr>
  */
-public class MainFrame extends ModelDeBaseFrame {
+public class MainFrame extends JFrame{
 
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
     private final MessageHelper helper = new MessageHelper();
 
-    public MainFrame() throws SQLException {
+    public MainFrame()  {
         super();
         setTitle(helper.getProperty("mainFrame.titre"));
         getContentPane().setLayout(new BorderLayout(10, 10));
@@ -48,6 +49,7 @@ public class MainFrame extends ModelDeBaseFrame {
                             headerPanel.setEnabledHeader(true);
                         }
                     });
+                    Connection conn = null;
                     PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
                     pst3.setInt(1, OperationType.deconnexion.ordinal());
                     pst3.setDate(2, new Date(new java.util.Date().getTime()));
