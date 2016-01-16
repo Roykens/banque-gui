@@ -32,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class ComptePanel extends ModelDeBasePanel {
+public class ComptePanel extends JPanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -46,7 +46,7 @@ public class ComptePanel extends ModelDeBasePanel {
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
 
-    public ComptePanel(MainMenuPanel parentFrame) throws SQLException {
+    public ComptePanel(MainMenuPanel parentFrame)  {
         super();
         try {
             adminService = new BanqueAdminServiceImpl();
@@ -90,22 +90,17 @@ public class ComptePanel extends ModelDeBasePanel {
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    try {
+                    
                         parent.setContenu(new NouveauComptePanel(parent));
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
-                        try {
+                     
                             parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
-                        } catch (SQLException ex) {
-                            Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun compte selectionné");
                     }
@@ -143,13 +138,6 @@ public class ComptePanel extends ModelDeBasePanel {
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucune ligne de la table n'est selectionnee");
-                    }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
                     }
 
                 }

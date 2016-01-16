@@ -3,14 +3,16 @@ package com.douwe.banque.gui;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.common.LoginPanel;
 import com.douwe.banque.gui.common.UserInfo;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.User;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.MessageHelper;
-import com.douwe.banque.util.ModelDeBaseFrame;
 import java.awt.BorderLayout;
-import java.beans.Transient;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -25,9 +27,13 @@ public class MainFrame extends JFrame{
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
     private final MessageHelper helper = new MessageHelper();
+    private IBanqueCommonService commonService ;
+    private IBanqueAdminService adminService;
 
     public MainFrame()  {
         super();
+        commonService = new BanqueServiceCommonImpl();
+        adminService = new BanqueAdminServiceImpl();
         setTitle(helper.getProperty("mainFrame.titre"));
         getContentPane().setLayout(new BorderLayout(10, 10));
         headerPanel = new HeaderPanel() {
@@ -49,17 +55,15 @@ public class MainFrame extends JFrame{
                             headerPanel.setEnabledHeader(true);
                         }
                     });
-                    Connection conn = null;
-                    PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                    pst3.setInt(1, OperationType.deconnexion.ordinal());
-                    pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                    pst3.setString(3, helper.getProperty("mainFrame.deconnecteUtilisateur") + UserInfo.getUsername());
-                    pst3.setInt(4, 1);
-                    pst3.setInt(5, 1);
-                    pst3.executeUpdate();
-                    pst3.close();
-                    conn.close();
-                } catch (SQLException ex) {
+                    Operation o = new Operation();
+                    User u = adminService.findUserByLogin(UserInfo.getUsername().toLowerCase());
+                    o.setAccount(null);
+                    o.setDateOperation(new Date(new java.util.Date().getTime()));
+                    o.setDescription(helper.getProperty("mainFrame.deconnecteUtilisateur") + UserInfo.getUsername());
+                    o.setType(OperationType.deconnexion);
+                    o.setUser(u);
+                    commonService.saveOperation(o);
+                } catch (ServiceException ex) {
                     Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -67,20 +71,16 @@ public class MainFrame extends JFrame{
         getContentPane().add(headerPanel, BorderLayout.BEFORE_FIRST_LINE);
         contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout());
-        try {
-            JPanel login = new LoginPanel() {
-                @Override
-                public void success() {
-                    contentPanel.removeAll();
-                    contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
-                    contentPanel.validate();
-                    headerPanel.setEnabledHeader(true);
-                }
-            };
-            contentPanel.add(login, BorderLayout.CENTER);
-        } catch (SQLException e) {
-            System.err.println("Erreur de Connection à la BD");
-        }
+        JPanel login = new LoginPanel() {
+            @Override
+            public void success() {
+                contentPanel.removeAll();
+                contentPanel.add(BorderLayout.CENTER, new MainMenuPanel());
+                contentPanel.validate();
+                headerPanel.setEnabledHeader(true);
+            }
+        };
+        contentPanel.add(login, BorderLayout.CENTER);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }

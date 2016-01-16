@@ -17,8 +17,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,14 +32,14 @@ import javax.swing.border.EmptyBorder;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class LoginPanel extends ModelDeBasePanel {
+public class LoginPanel extends JPanel {
 
     private JTextField loginText;
     private JPasswordField passwdText;
     private JButton btnLogin;
     private IBanqueCommonService commonService;
 
-    public LoginPanel() throws SQLException{
+    public LoginPanel() {
         super();
         commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
@@ -57,6 +55,7 @@ public class LoginPanel extends ModelDeBasePanel {
         builder.append(btnLogin = new JButton("Login"));
         add(BorderLayout.CENTER, builder.getPanel());
         btnLogin.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
                     String username = loginText.getText();
@@ -75,7 +74,7 @@ public class LoginPanel extends ModelDeBasePanel {
                     if (user != null) {
                         UserInfo.setUsername(username);
                         UserInfo.setRole(user.getRole());
-                        UserInfo.setUserId((int)user.getId());
+                        UserInfo.setUserId((int) user.getId());
                         UserInfo.setLogged(true);
                         if (UserInfo.getRole().equals(RoleType.customer)) {
                             Customer customer = commonService.findCustomerByLogin(username);
@@ -87,26 +86,19 @@ public class LoginPanel extends ModelDeBasePanel {
                         operation.setDescription(username);
                         operation.setType(OperationType.connexion);
                         operation.setUser(user);
-//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-//                            pst3.setInt(1, OperationType.connexion.ordinal());
-//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-//                            pst3.setString(3, "Connection de l'utilisateur " + username);
-//                            pst3.setInt(4, 1);
-//                            pst3.setInt(5, 1);
-//                            pst3.executeUpdate();
-//                            pst3.close();
-                            success();
-                        
+                        commonService.saveOperation(operation);
+                        success();
+
                     } else {
                         JOptionPane.showMessageDialog(null, "Login ou mot de passe incorrect");
                         passwdText.setText("");
                     }
-                  
-                  //  conn.close();
+
+                    //  conn.close();
                 } catch (ServiceException ex) {
                     Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
-              
+
             }
         });
     }

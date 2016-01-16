@@ -3,7 +3,13 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.User;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -12,8 +18,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -28,7 +32,7 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauUtilisateurPanel extends ModelDeBasePanel {
+public class NouveauUtilisateurPanel extends JPanel {
 
     private JTextField loginText;
     private JPasswordField passwdText1;
@@ -36,8 +40,10 @@ public class NouveauUtilisateurPanel extends ModelDeBasePanel {
     private JComboBox<RoleType> role;
     private JButton enregistrer;
     private MainMenuPanel parent;
+    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
+    private IBanqueCommonService commonService = new BanqueServiceCommonImpl();
 
-    public NouveauUtilisateurPanel(MainMenuPanel parentFrame) throws SQLException {
+    public NouveauUtilisateurPanel(MainMenuPanel parentFrame)  {
         super();
         setLayout(new BorderLayout(20, 20));
         this.parent = parentFrame;
@@ -57,6 +63,7 @@ public class NouveauUtilisateurPanel extends ModelDeBasePanel {
         builder.append(enregistrer = new JButton("Enregistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
         enregistrer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
                     String login = loginText.getText();
@@ -79,34 +86,23 @@ public class NouveauUtilisateurPanel extends ModelDeBasePanel {
                         JOptionPane.showMessageDialog(null, "Le role est obligatoire");
                         return;
                     }
-                    conn.setAutoCommit(false);
-                    PreparedStatement pst = conn.prepareStatement("insert into users (username,passwd,role) values(?,?,?)");
-                    pst.setString(1, login.toLowerCase());
-                    pst.setString(2, pwd);
-                    pst.setInt(3, ro.ordinal());
-                    pst.executeUpdate();
-                    pst.close();
-                    PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                    pst3.setInt(1, OperationType.ajout.ordinal());
-                    pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                    pst3.setString(3, "Ajout de l'utilisateur " + login.toLowerCase());
-                    pst3.setInt(4, 1);
-                    pst3.setInt(5, 1);
-                    pst3.executeUpdate();
-                    pst3.close();
-                    conn.commit();
-                    conn.close();
+                    User user = new User();
+                    user.setLogin(login.toLowerCase());
+                    user.setPassword(pwd);
+                    user.setRole(ro);
+                    adminService.saveOrUpdateUser(user);
+                    user = adminService.findUserByLogin(login.toLowerCase());
+                    Operation o = new Operation();
+                    o.setAccount(null);
+                    o.setDateOperation(new Date(new java.util.Date().getTime()));
+                    o.setType(OperationType.debit);
+                    o.setUser(user);
+                    o.setDescription("Ajout de l'utilisateur " + login.toLowerCase());
+                    commonService.saveOperation(o);                    
                     parent.setContenu(new UtilisateurPanel(parent));
-                } catch (SQLException ex) {
+                } catch (ServiceException ex) {
                     JOptionPane.showMessageDialog(null, "Impossible de créer le compte");
                     Logger.getLogger(NouveauUtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex1) {
-                        Logger.getLogger(NouveauUtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                    }
                 }
             }
         });

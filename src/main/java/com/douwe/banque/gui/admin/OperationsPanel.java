@@ -1,25 +1,24 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.OperationType;
-import com.douwe.banque.gui.client.MesOperationsListePanel;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.projection.AccountOperation;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Connection;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,7 +30,7 @@ import org.jdesktop.swingx.JXDatePicker;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class OperationsPanel extends ModelDeBasePanel {
+public class OperationsPanel extends JPanel {
 
     private JTable operationTable;
     private DefaultTableModel tableModel;
@@ -41,10 +40,13 @@ public class OperationsPanel extends ModelDeBasePanel {
     private JButton filtreBtn;
     private JXDatePicker startDate;
     private JXDatePicker endDate;
+    private IBanqueAdminService adminService;
+    private Connection conn;
 
-    public OperationsPanel() throws SQLException {
+    public OperationsPanel()  {
         super();
         try {
+            adminService = new BanqueAdminServiceImpl();
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -57,6 +59,7 @@ public class OperationsPanel extends ModelDeBasePanel {
             JPanel filtrePanel = new JPanel();
             filtreBtn = new JButton("Filtrer");
             filtreBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     try {
                         String selectedCompte = compteText.getText();
@@ -64,55 +67,17 @@ public class OperationsPanel extends ModelDeBasePanel {
                         String client = clientText.getText();
                         Date debut = startDate.getDate();
                         Date fin = endDate.getDate();
-                        StringBuilder builder = new StringBuilder("select operations.*, account.accountNumber, users.username from operations, account, users where operations.account_id=account.id and operations.user_id=users.id");
-                        if ((selectedCompte != null) && !("".equals(selectedCompte))) {
-                            builder.append(" and accountNumber like '%");
-                            builder.append(selectedCompte);
-                            builder.append("%'");
-                        }
-                        if ((client != null) && !("".equals(client))) {
-                            builder.append(" and username like '%");
-                            builder.append(selectedCompte);
-                            builder.append("%'");
-                        }
-                        if (selectedOperation != null) {
-                            int index = selectedOperation.ordinal();
-                            builder.append(" and operationType = ");
-                            builder.append(index);
-                        }
-                        if (debut != null) {
-                            builder.append(" and dateOperation >= '");
-                            builder.append(debut.getTime());
-                            builder.append("'");
-                        }
-                        if (fin != null) {
-                            builder.append(" and dateOperation <= '");
-                            builder.append(fin.getTime());
-                            builder.append("'");
-                        }
-                        System.out.println("ddd ddd " + builder.toString());
-                        PreparedStatement pStat = conn.prepareStatement(builder.toString());
-                        ResultSet rs = pStat.executeQuery();
+                        List<AccountOperation> operations = adminService.findOperationByCriteria(selectedCompte, client, selectedOperation, debut, fin);
                         tableModel.setNumRows(0);
-                        while (rs.next()) {
-                            tableModel.addRow(new Object[]{OperationType.values()[rs.getInt("operationType")],
-                                rs.getString("accountNumber"),
-                                rs.getDate("dateOperation"),
-                                rs.getString("username"),
-                                rs.getString("description")});
+                        for (AccountOperation accountOperation : operations) {
+                            tableModel.addRow(new Object[]{accountOperation.getType(),
+                                accountOperation.getAccountNumber(),
+                                accountOperation.getDateOperation(),
+                                accountOperation.getUsername(),
+                                accountOperation.getDescription()});
                         }
-                        pStat.close();
-                        conn.close();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Impossible de filtrer vos données");
-                        Logger.getLogger(MesOperationsListePanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(MesOperationsListePanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
+                    } catch (ServiceException ex) {
+                        Logger.getLogger(OperationsPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
@@ -140,27 +105,16 @@ public class OperationsPanel extends ModelDeBasePanel {
             operationTable = new JTable(tableModel);
             contenu.add(BorderLayout.CENTER, new JScrollPane(operationTable));
             add(BorderLayout.CENTER, contenu);
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("select operations.*, account.accountNumber, users.username from operations, account, users where account.id = operations.account_id and users.id = operations.user_id");
-            while (rs.next()) {
-                tableModel.addRow(new Object[]{OperationType.values()[rs.getInt("operationType")],
-                    rs.getString("accountNumber"),
-                    rs.getDate("dateOperation"),
-                    rs.getString("username"),
-                    rs.getString("description")});
+            List<AccountOperation> ops = adminService.findAllOperations();
+            for (AccountOperation accountOperation : ops) {
+                tableModel.addRow(new Object[]{accountOperation.getType(),
+                    accountOperation.getAccountNumber(),
+                    accountOperation.getDateOperation(),
+                    accountOperation.getUsername(),
+                    accountOperation.getDescription()});
             }
-            rs.close();
-            st.close();
-            conn.close();
-        } catch (SQLException ex) {
+        } catch (ServiceException ex) {
             Logger.getLogger(OperationsPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex1) {
-                Logger.getLogger(MesOperationsListePanel.class.getName()).log(Level.SEVERE, null, ex1);
-            }
         }
     }
 }

@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,7 @@ import org.jdesktop.swingx.JXDatePicker;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class MesOperationsListePanel extends ModelDeBasePanel {
+public class MesOperationsListePanel extends JPanel {
 
     private JComboBox<String> comptes;
     private JComboBox<String> operations;
@@ -40,8 +41,8 @@ public class MesOperationsListePanel extends ModelDeBasePanel {
     private DefaultTableModel tableModel;
     private JButton filtreBtn;
     private final String accountQuery = "select accountNumber from account where customer_id=?";
-
-    public MesOperationsListePanel() throws SQLException {
+    private Connection conn;
+    public MesOperationsListePanel()  {
         super();
         try {
             setLayout(new BorderLayout());

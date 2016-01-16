@@ -16,9 +16,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -52,11 +49,9 @@ public class MainMenuPanel extends JPanel {
         mesComptes.setText(helper.getProperty("mainMenuPanel.mesComptes"));
         mesComptes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+               
                     setContenu(new MesCompteListePanel());
-                } catch (Exception ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         mesComptes.setUnclickedColor(Color.blue);
@@ -65,11 +60,9 @@ public class MainMenuPanel extends JPanel {
         mesOperations.setText(helper.getProperty("mainMenuPanel.mesOperations"));
         mesOperations.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+             
                     setContenu(new MesOperationsListePanel());
-                } catch (Exception ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         mesOperations.setUnclickedColor(Color.blue);
@@ -78,11 +71,9 @@ public class MainMenuPanel extends JPanel {
         tranfer.setText(helper.getProperty("mainMenuPanel.transfert"));
         tranfer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+               
                     setContenu(new TransfertPanel(MainMenuPanel.this));
-                } catch (Exception ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         tranfer.setUnclickedColor(Color.blue);
@@ -96,11 +87,9 @@ public class MainMenuPanel extends JPanel {
         utilisateurs.setText(helper.getProperty("mainMenuPanel.utilisateurs"));
         utilisateurs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+               
                     setContenu(new UtilisateurPanel(MainMenuPanel.this));
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         utilisateurs.setUnclickedColor(Color.blue);
@@ -109,11 +98,9 @@ public class MainMenuPanel extends JPanel {
         comptes.setText(helper.getProperty("mainMenuPanel.comptes"));
         comptes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+               
                     setContenu(new ComptePanel(MainMenuPanel.this));
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         comptes.setUnclickedColor(Color.blue);
@@ -127,11 +114,9 @@ public class MainMenuPanel extends JPanel {
         operations.setText(helper.getProperty("mainMenuPanel.operations"));
         operations.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
+              
                     setContenu(new OperationsPanel());
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
             }
         });
         operations.setUnclickedColor(Color.blue);
@@ -172,11 +157,7 @@ public class MainMenuPanel extends JPanel {
         debit.setClickedColor(Color.blue);
         debit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                try {
-                    setContenu(new NouveauDebitPanel(MainMenuPanel.this));
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    setContenu(new NouveauDebitPanel(MainMenuPanel.this));               
             }
         });
         employee.add(credit = new JXHyperlink());
@@ -184,12 +165,7 @@ public class MainMenuPanel extends JPanel {
         credit.setUnclickedColor(Color.blue);
         credit.setClickedColor(Color.blue);
         credit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                try {
-                    setContenu(new NouveauDepotPanel(MainMenuPanel.this));
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainMenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            public void actionPerformed(ActionEvent ae) {setContenu(new NouveauDepotPanel(MainMenuPanel.this));
             }
         });
         menu.add(employee);

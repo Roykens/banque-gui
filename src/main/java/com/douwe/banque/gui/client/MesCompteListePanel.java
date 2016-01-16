@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Label;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,15 +22,17 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class MesCompteListePanel extends ModelDeBasePanel {
+public class MesCompteListePanel extends JPanel {
 
     private JTable compteTable;
     private DefaultTableModel model;
     private static final String request = "select * from account where customer_id=?";
+    private Connection conn;
 
-    public MesCompteListePanel() throws SQLException {
+    public MesCompteListePanel()  {
         super();
         try {
+            
             setLayout(new BorderLayout(10, 10));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
             Label lbl;
@@ -51,13 +54,6 @@ public class MesCompteListePanel extends ModelDeBasePanel {
             conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(MesCompteListePanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex1) {
-                Logger.getLogger(MesCompteListePanel.class.getName()).log(Level.SEVERE, null, ex1);
-            }
         }
     }
 }

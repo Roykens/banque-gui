@@ -3,7 +3,13 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.gui.MainMenuPanel;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.User;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,9 +17,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -30,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class UtilisateurPanel extends ModelDeBasePanel {
+public class UtilisateurPanel extends JPanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -41,10 +45,14 @@ public class UtilisateurPanel extends ModelDeBasePanel {
     private JTable utilisateurTable;
     private DefaultTableModel tableModel;
     private MainMenuPanel parent;
+    private IBanqueAdminService adminService;
+    private IBanqueCommonService commonService;
 
-    public UtilisateurPanel(MainMenuPanel parentFrame) throws SQLException {
+    public UtilisateurPanel(MainMenuPanel parentFrame)  {
         super();
         try {
+            adminService = new BanqueAdminServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel haut = new JPanel();
@@ -62,6 +70,7 @@ public class UtilisateurPanel extends ModelDeBasePanel {
             initialiserPasswdBtn = new JButton("Reinitialiser Mot de Passe");
             filtreBtn = new JButton("Filtrer");
             filtreBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     try {
                         String username = loginText.getText();
@@ -76,103 +85,66 @@ public class UtilisateurPanel extends ModelDeBasePanel {
                             query.append("and role = ");
                             query.append(roleN.ordinal());
                         }
-                        PreparedStatement pst = conn.prepareStatement(query.toString());
-                        pst.setInt(1, 0);
-                        ResultSet rs = pst.executeQuery();
+                        List<User> users = adminService.findUserByNameAndRole(username, roleN);
                         tableModel.setRowCount(0);
-                        while (rs.next()) {
-                            tableModel.addRow(new Object[]{rs.getInt("id"),
-                                rs.getString("username"),
-                                RoleType.values()[rs.getInt("role")]});
+                        for (User user : users) {
+                            tableModel.addRow(new Object[]{user.getId(),
+                                user.getLogin(),
+                                user.getRole()});
                         }
-                        rs.close();
-                        pst.close();
-                        conn.close();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Impossible de filtrer vos données");
+                    } catch (ServiceException ex) {
                         Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
                     }
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
-                    try {
+                    
                         parent.setContenu(new NouveauUtilisateurPanel(parent));
-                    } catch (SQLException ex) {
-                        Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                 }
             });
             initialiserPasswdBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = utilisateurTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            PreparedStatement pst = conn.prepareStatement("update users set passwd = ? where id = ?");
-                            pst.setString(1, "admin");
-                            pst.setInt(2, (Integer) tableModel.getValueAt(selected, 0));
-                            pst.executeUpdate();
-                            pst.close();
-                            conn.close();
+                            User user = adminService.findUserById((Integer) tableModel.getValueAt(selected, 0));
+                            user.setPassword("admin");
+                            adminService.saveOrUpdateUser(user);
                             JOptionPane.showMessageDialog(null, "Le mot de passe est reinitialisé à 'admin'");
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(null, "Impossible de reinitialiser le mot de passe");
+                        } catch (ServiceException ex) {
                             Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun utilisateur n'est selectionné");
                     }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
-                    }
                 }
             });
             supprimerBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = utilisateurTable.getSelectedRow();
                     if (selected >= 0) {
-                        try {
-                            conn.setAutoCommit(false);
-                            PreparedStatement pst = conn.prepareStatement("update users set status = ? where id = ?");
-                            pst.setInt(1, 1);
-                            pst.setInt(2, (Integer) tableModel.getValueAt(selected, 0));
-                            pst.executeUpdate();
-                            pst.close();
-                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, OperationType.suppression.ordinal());
-                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                            pst3.setString(3, "Suppression de l'utilisateur " + tableModel.getValueAt(selected, 1));
-                            pst3.setInt(4, 1);
-                            pst3.setInt(5, 1);
-                            pst3.executeUpdate();
-                            pst3.close();
-                            conn.commit();
-                            conn.close();
+                        try {   
+                            User u = adminService.findUserById((Integer) tableModel.getValueAt(selected, 0));
+                            adminService.deleteUser((Integer) tableModel.getValueAt(selected, 0));
+                            Operation o = new Operation();
+                            o.setAccount(null);
+                            o.setDateOperation( new Date(new java.util.Date().getTime()));
+                            o.setDescription("Suppression de l'utilisateur " + tableModel.getValueAt(selected, 1));
+                            o.setType(OperationType.suppression);
+                            o.setUser(u);
+                            commonService.saveOperation(o);
                             tableModel.removeRow(selected);
-                        } catch (SQLException ex) {
+                            
+                        } catch (ServiceException ex) {
                             JOptionPane.showMessageDialog(null, "Impossible de supprimer cet utilisateur");
                             Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Aucun utilisateur n'est selectionné");
-                    }
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex1) {
-                            Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
                     }
                 }
             });
@@ -199,25 +171,14 @@ public class UtilisateurPanel extends ModelDeBasePanel {
             utilisateurTable.removeColumn(utilisateurTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(utilisateurTable));
             add(BorderLayout.CENTER, contenu);
-            PreparedStatement pst = conn.prepareStatement("select * from users where status = ?");
-            pst.setInt(1, 0);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                tableModel.addRow(new Object[]{rs.getInt("id"),
-                    rs.getString("username"),
-                    RoleType.values()[rs.getInt("role")]});
+            List<User> users = adminService.findAllUsers();
+            for (User user : users) {
+                tableModel.addRow(new Object[]{user.getId(),
+                    user.getLogin(),
+                    user.getRole()});
             }
-            pst.close();
-            conn.close();
-        } catch (SQLException ex) {
+        } catch (ServiceException ex) {
             Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex1) {
-                Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex1);
-            }
         }
     }
 }

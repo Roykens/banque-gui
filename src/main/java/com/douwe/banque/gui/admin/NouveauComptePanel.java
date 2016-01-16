@@ -3,7 +3,15 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.AccountType;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.Account;
+import com.douwe.banque.model.Customer;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.projection.AccountCustomer;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -12,9 +20,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -28,7 +33,7 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauComptePanel extends ModelDeBasePanel {
+public class NouveauComptePanel extends JPanel {
 
     private JTextField numberText;
     private JTextField balanceText;
@@ -37,41 +42,31 @@ public class NouveauComptePanel extends ModelDeBasePanel {
     private JButton btnEnregistrer;
     private int id = -1;
     private MainMenuPanel parent;
+    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
+    private IBanqueCommonService commonService = new BanqueServiceCommonImpl();
 
-    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) throws SQLException {
+    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id)  {
         this(parentFrame);
         this.id = account_id;
         if (this.id > 0) {
             btnEnregistrer.setText("Modifier");
             try {
-                PreparedStatement pst = conn.prepareStatement("select account.*, customer.name  from account, customer where account.id = ? and account.customer_id = customer.id");
-                pst.setInt(1, id);
-                ResultSet rs = pst.executeQuery();
-                if (rs.next()) {
-                    numberText.setText(rs.getString("accountNumber"));
-                    balanceText.setText("" + rs.getDouble("balance"));
+                AccountCustomer result =  adminService.findAccountCustomerById(id);                
+                if (result != null) {
+                    numberText.setText(result.getAccountNumber());
+                    balanceText.setText(String.valueOf(result.getBalance()));
                     balanceText.setEnabled(false);
                     customerText.setEnabled(false);
-                    customerText.setText(rs.getString("name"));
-                    typeText.setSelectedItem(AccountType.values()[rs.getInt("type")]);
+                    customerText.setText(result.getCustomerName());
+                    typeText.setSelectedItem(result.getType());
                 }
-                rs.close();
-                pst.close();
-                conn.close();
-            } catch (SQLException ex) {
+            } catch (ServiceException ex) {
                 Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex1);
-                }
             }
         }
     }
 
-    public NouveauComptePanel(MainMenuPanel parentFrame) throws SQLException {
+    public NouveauComptePanel(MainMenuPanel parentFrame) {
         super();
         this.parent = parentFrame;
         setLayout(new BorderLayout(10, 10));
@@ -90,6 +85,7 @@ public class NouveauComptePanel extends ModelDeBasePanel {
         builder.append(btnEnregistrer = new JButton("Enrégistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 if (id > 0) {
                     try {
@@ -104,16 +100,12 @@ public class NouveauComptePanel extends ModelDeBasePanel {
                             JOptionPane.showMessageDialog(null, "Le type du compte n'est pas specifie");
                             return;
                         }
-                        PreparedStatement pst = conn.prepareStatement("update account set type=? , accountNumber=? where id =?");
-                        pst.setInt(1, type.ordinal());
-                        pst.setString(2, number);
-                        pst.setInt(3, id);
-                        pst.executeUpdate();
-                        pst.close();
-                        conn.close();
+                        Account acc = adminService.findAccountById(id);
+                        acc.setType(type);
+                        acc.setAccountNumber(number);
+                        adminService.saveOrUpdateAccount(acc);
                         parent.setContenu(new ComptePanel(parent));
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Impossible de mettre à jour le compte");
+                    } catch (ServiceException ex) {
                         Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
@@ -151,47 +143,25 @@ public class NouveauComptePanel extends ModelDeBasePanel {
                             JOptionPane.showMessageDialog(null, "Le solde compte doit être un nombre positif");
                             return;
                         }
-                        PreparedStatement pst = conn.prepareStatement("select id from customer where name = ?");
-                        pst.setString(1, customer);
-                        ResultSet rs = pst.executeQuery();
-                        if (rs.next()) {
-                            int customer_id = rs.getInt("id");
-                            conn.setAutoCommit(false);
-                            PreparedStatement st = conn.prepareStatement("insert into account(accountNumber,balance,dateCreation,type, customer_id) values(?,?,?,?,?)");
-                            st.setString(1, number);
-                            st.setDouble(2, balance);
-                            st.setDate(3, new Date(new java.util.Date().getTime()));
-                            st.setInt(4, type.ordinal());
-                            st.setInt(5, customer_id);
-                            st.executeUpdate();
-                            st.close();
-                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-                            pst3.setInt(1, OperationType.ouverture.ordinal());
-                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-                            pst3.setString(3, "Ouverture du compte " + number);
-                            pst3.setInt(4, 1);
-                            pst3.setInt(5, 1);
-                            pst3.executeUpdate();
-                            pst3.close();
-                            conn.commit();
+                         Customer cc = adminService.getSingleCustomerByName(customer);
+                        if (cc != null) { 
+                            Account acc = new Account(number,balance,new java.util.Date(),type, cc,0);
+                            adminService.saveOrUpdateAccount(acc);
+                            acc = adminService.findAccountByNumber(number);
+                            Operation operation = new Operation();
+                            operation.setAccount(acc);
+                            operation.setDescription("Ouverture du compte " + number);
+                            operation.setType(OperationType.ouverture);
+                            operation.setDateOperation(new Date(new java.util.Date().getTime()));
+                            operation.setUser(null);
+                            commonService.saveOperation(operation);
                         } else {
                             JOptionPane.showMessageDialog(null, "Le client spécifié n'existe pas");
                             return;
                         }
-                        rs.close();
-                        pst.close();
-                        conn.close();
                         parent.setContenu(new ComptePanel(parent));
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Impossible d'enregistrer le compte");
+                    } catch (ServiceException ex) {
                         Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex1) {
-                        Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex1);
                     }
                 }
             }

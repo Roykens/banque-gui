@@ -13,6 +13,7 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,15 +30,16 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class TransfertPanel extends ModelDeBasePanel {
+public class TransfertPanel extends JPanel {
 
     private JComboBox<String> source;
     private JTextField destination;
     private JTextField amount;
     private JButton transferBtn;
     private MainMenuPanel parent;
+    private Connection conn;
 
-    public TransfertPanel(MainMenuPanel parentFrame) throws SQLException {
+    public TransfertPanel(MainMenuPanel parentFrame)  {
         super();
         try {
             setLayout(new BorderLayout());
@@ -146,12 +148,6 @@ public class TransfertPanel extends ModelDeBasePanel {
         } catch (SQLException ex) {
             Logger.getLogger(TransfertPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex1) {
-                Logger.getLogger(TransfertPanel.class.getName()).log(Level.SEVERE, null, ex1);
-            }
-        }
+        
     }
 }

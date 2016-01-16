@@ -1,12 +1,10 @@
 package com.douwe.banque.gui.admin;
 
-import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
-import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -14,10 +12,6 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

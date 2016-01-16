@@ -32,8 +32,18 @@ public class OperationDaoJDBC implements IOperationDao {
             PreparedStatement psmt = conn.prepareStatement("insert into operations(dateOperation, description, account_id, user_id, operationType) values(?,?,?,?,?)");
             psmt.setDate(1, new java.sql.Date(operation.getDateOperation().getTime()));
             psmt.setString(2, operation.getDescription());
-            psmt.setLong(3, operation.getAccount().getId());
-            psmt.setLong(4, operation.getUser().getId());
+            if(operation.getAccount() != null){
+                psmt.setLong(3, operation.getAccount().getId());
+            }
+            else{
+                psmt.setLong(3, 1L);
+            }
+            if (operation.getUser() != null) {
+                psmt.setLong(4, operation.getUser().getId());
+            }
+            else{
+                psmt.setLong(4, 1L);
+            }
             psmt.setInt(5, operation.getType().ordinal());
             psmt.executeUpdate();
             ResultSet rs = psmt.getGeneratedKeys();
@@ -155,7 +165,7 @@ public class OperationDaoJDBC implements IOperationDao {
             return result;
         } catch (SQLException ex) {
             Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
-            throw  new DataAccessException(ex);
+            throw new DataAccessException(ex);
         }
     }
 
@@ -194,7 +204,7 @@ public class OperationDaoJDBC implements IOperationDao {
             return result;
         } catch (SQLException ex) {
             Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
-            throw  new DataAccessException(ex);
+            throw new DataAccessException(ex);
         }
     }
 }
