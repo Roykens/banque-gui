@@ -1,10 +1,15 @@
 package com.douwe.banque.gui.client;
 
-import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
-import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.Account;
+import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueClientService;
+import com.douwe.banque.service.IBanqueCommonService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueClientServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -14,10 +19,7 @@ import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -37,11 +39,17 @@ public class TransfertPanel extends JPanel {
     private JTextField amount;
     private JButton transferBtn;
     private MainMenuPanel parent;
+    private IBanqueAdminService adminService;
+    private IBanqueClientService clientService;
+    private IBanqueCommonService commonService;
     private Connection conn;
 
-    public TransfertPanel(MainMenuPanel parentFrame)  {
+    public TransfertPanel(MainMenuPanel parentFrame) {
         super();
         try {
+            adminService = new BanqueAdminServiceImpl();
+            clientService = new BanqueClientServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -55,6 +63,7 @@ public class TransfertPanel extends JPanel {
             builder.append("Montant", amount = new JTextField());
             builder.append(transferBtn = new JButton("Transferer"));
             transferBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     String init = (String) source.getSelectedItem();
                     String dest = destination.getText();
@@ -68,68 +77,13 @@ public class TransfertPanel extends JPanel {
                     } else {
                         try {
                             double value = Double.valueOf(amt);
-                            ResultSet rss;
-                            PreparedStatement bst = conn.prepareStatement("select balance from account where accountNumber = ?");
-                            bst.setString(1, init);
-                            rss = bst.executeQuery();
-                            if (rss.next()) {
-                                double current = rss.getDouble("balance");
-                                if (current >= value) {
-                                    PreparedStatement outst = conn.prepareStatement("select * from account where accountNumber = ?");
-                                    outst.setString(1, dest);
-                                    rss = outst.executeQuery();
-                                    if (rss.next()) {
-                                        conn.setAutoCommit(false);
-                                        PreparedStatement crst = conn.prepareStatement("update account set balance = balance + ? where accountNumber = ?");
-                                        PreparedStatement dtst = conn.prepareStatement("update account set balance = balance - ? where accountNumber = ?");
-                                        PreparedStatement op1st = conn.prepareStatement("insert into operations (operationType, dateOperation,description,account_id,user_id) values(?,?,?,?,?)");
-                                        crst.setDouble(1, value);
-                                        crst.setString(2, dest);
-                                        crst.executeUpdate();
-                                        dtst.setDouble(1, value);
-                                        dtst.setString(2, init);
-                                        dtst.executeUpdate();
-                                        op1st.setInt(1, OperationType.transfer.ordinal());
-                                        op1st.setDate(2, new java.sql.Date(new Date().getTime()));
-                                        op1st.setString(3, "Transfert de " + amt + " du compte " + init + " vers compte le " + dest);
-                                        op1st.setInt(4, rss.getInt("id"));
-                                        op1st.setInt(5, UserInfo.getUserId());
-                                        op1st.executeUpdate();
-                                        conn.commit();
-                                        crst.close();
-                                        dtst.close();
-                                        op1st.close();
-                                        JOptionPane.showMessageDialog(null, "Operation de transfert realisee avec succes");
-                                        parent.setContenu(EmptyPanel.emptyPanel());
-                                    } else {
-                                        JOptionPane.showMessageDialog(null, "Le compte " + dest + " n'existe pas", "Erreur", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                    outst.close();
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Le compte " + init + " ne dispose pas d'un solde suffisant", "Erreur", JOptionPane.ERROR_MESSAGE);
-                                }
-                            }
-                            rss.close();
-                            bst.close();
-
+                            clientService.transfer(init, dest, value, UserInfo.getUserId());
                         } catch (NumberFormatException ps) {
                             JOptionPane.showMessageDialog(null, "Le montant doit etre un nombre", "Erreur", JOptionPane.ERROR_MESSAGE);
-                        } catch (SQLException ex) {
+                        } catch (ServiceException ex) {
                             JOptionPane.showMessageDialog(null, "Erreur lors du transfert", "Erreur", JOptionPane.ERROR_MESSAGE);
-                            try {
-                                conn.rollback();
-                            } catch (SQLException ex1) {
-                                Logger.getLogger(TransfertPanel.class.getName()).log(Level.SEVERE, null, ex1);
-                            }
-                        }
-                        try {
-                            if (conn != null) {
-                                conn.close();
-                            }
-                        } catch (SQLException ex) {
                             Logger.getLogger(TransfertPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
 
                     }
 
@@ -137,17 +91,13 @@ public class TransfertPanel extends JPanel {
             });
             add(BorderLayout.CENTER, builder.getPanel());
             source.addItem("");
-            PreparedStatement pst = conn.prepareStatement("select accountNumber from account where customer_id = ?");
-            pst.setInt(1, UserInfo.getCustomerId());
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                source.addItem(rs.getString("accountNumber"));
-            }
-            pst.close();
-            conn.close();
-        } catch (SQLException ex) {
+             List<Account> accounts = clientService.findAccountByCustomerId(UserInfo.getCustomerId());
+        for (Account account : accounts) {    
+            source.addItem(account.getAccountNumber());
+        }
+        } catch (ServiceException ex) {
             Logger.getLogger(TransfertPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 }

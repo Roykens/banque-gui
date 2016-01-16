@@ -1,16 +1,15 @@
 package com.douwe.banque.gui.client;
 
-import com.douwe.banque.data.AccountType;
 import com.douwe.banque.gui.common.UserInfo;
-import com.douwe.banque.util.ModelDeBasePanel;
+import com.douwe.banque.model.Account;
+import com.douwe.banque.service.IBanqueClientService;
+import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.impl.BanqueClientServiceImpl;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Label;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -27,12 +26,12 @@ public class MesCompteListePanel extends JPanel {
     private JTable compteTable;
     private DefaultTableModel model;
     private static final String request = "select * from account where customer_id=?";
-    private Connection conn;
+    private IBanqueClientService clientService;
 
-    public MesCompteListePanel()  {
+    public MesCompteListePanel() {
         super();
         try {
-            
+            clientService = new BanqueClientServiceImpl();
             setLayout(new BorderLayout(10, 10));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
             Label lbl;
@@ -44,15 +43,12 @@ public class MesCompteListePanel extends JPanel {
             model = new DefaultTableModel(new String[]{"No Compte", "Type Compte", "Balance"}, 0);
             compteTable = new JTable(model);
             add(BorderLayout.CENTER, new JScrollPane(compteTable));
-            PreparedStatement pStmt = conn.prepareStatement(request);
-            pStmt.setInt(1, UserInfo.getCustomerId());
-            ResultSet rs = pStmt.executeQuery();
-            while (rs.next()) {
-                model.addRow(new Object[]{rs.getString("accountNumber"), AccountType.values()[rs.getInt("type")], rs.getDouble("balance")});
+            List<Account> accounts = clientService.findAccountByCustomerId(UserInfo.getCustomerId());
+            for (Account account : accounts) {
+                model.addRow(new Object[]{account.getAccountNumber(), account.getType(), account.getBalance()});
             }
-            pStmt.close();
-            conn.close();
-        } catch (SQLException ex) {
+            
+        } catch (ServiceException ex) {
             Logger.getLogger(MesCompteListePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
