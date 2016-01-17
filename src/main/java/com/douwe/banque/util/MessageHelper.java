@@ -2,6 +2,7 @@ package com.douwe.banque.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
  *
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
-public class MessageHelper {
+public class MessageHelper implements Serializable{
 
     private static Properties properties;
 

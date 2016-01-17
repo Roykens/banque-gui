@@ -42,16 +42,19 @@ public class NouveauComptePanel extends JPanel {
     private JButton btnEnregistrer;
     private int id = -1;
     private MainMenuPanel parent;
-    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
-    private IBanqueCommonService commonService = new BanqueServiceCommonImpl();
+    private IBanqueAdminService adminService;
+    private IBanqueCommonService commonService;
 
-    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id)  {
+    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) {
         this(parentFrame);
+
         this.id = account_id;
         if (this.id > 0) {
             btnEnregistrer.setText("Modifier");
             try {
-                AccountCustomer result =  adminService.findAccountCustomerById(id);                
+                adminService = new BanqueAdminServiceImpl();
+                commonService = new BanqueServiceCommonImpl();
+                AccountCustomer result = adminService.findAccountCustomerById(id);
                 if (result != null) {
                     numberText.setText(result.getAccountNumber());
                     balanceText.setText(String.valueOf(result.getBalance()));
@@ -143,9 +146,9 @@ public class NouveauComptePanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le solde compte doit être un nombre positif");
                             return;
                         }
-                         Customer cc = adminService.getSingleCustomerByName(customer);
-                        if (cc != null) { 
-                            Account acc = new Account(number,balance,new java.util.Date(),type, cc,0);
+                        Customer cc = adminService.getSingleCustomerByName(customer);
+                        if (cc != null) {
+                            Account acc = new Account(number, balance, new java.util.Date(), type, cc, 0);
                             adminService.saveOrUpdateAccount(acc);
                             acc = adminService.findAccountByNumber(number);
                             Operation operation = new Operation();

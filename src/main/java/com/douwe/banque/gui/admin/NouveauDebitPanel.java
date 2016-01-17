@@ -39,11 +39,13 @@ public class NouveauDebitPanel extends JPanel {
     private JTextField amountText;
     private JButton btnEnregistrer;
     private MainMenuPanel parent;
-    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
-    private IBanqueCommonService commonService= new BanqueServiceCommonImpl();
+    private IBanqueAdminService adminService ;
+    private IBanqueCommonService commonService;
 
     public NouveauDebitPanel(MainMenuPanel parentFrame) {
         super();
+        adminService = new BanqueAdminServiceImpl();
+        commonService= new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
