@@ -5,26 +5,46 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- *
+ * Cette classe représente un compte bancaire d'un utilisateur du système. 
+ * Il est caractérisé par un numéro de compte , un solde et l'utilisateur du compte.
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
-public class Account implements Serializable{
-    
+public class Account implements Serializable {
+
+    /**
+     * L'identifiant d'un compte
+     */
     private Integer id;
-    
-    private String  accountNumber;
-    
+
+    /**
+     * le numéro du compte
+     */
+    private String accountNumber;
+
+    /**
+     * Le solde du compte
+     */
     private double balance;
-    
+
+    /**
+     * le date de creation du compte
+     */
     private Date dateDeCreation;
-    
+
+    /**
+     * le type de compte : courant ou depot
+     */
     private AccountType type;
-    
+
+    /**
+     * l'utilisateur du compte
+     */
     private Customer customer;
-    
+
+    /**
+     * le status du compte : active ou inactif
+     */
     private int status;
-    
-  
 
     public Account(String accountNumber, double balance, Date dateDeCreation, AccountType type, Customer customer, int status) {
         this.accountNumber = accountNumber;
@@ -33,14 +53,13 @@ public class Account implements Serializable{
         this.type = type;
         this.customer = customer;
         this.status = status;
-        
+
     }
-    
-    
-    public Account(){
-        
+
+    public Account() {
+
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -97,5 +116,4 @@ public class Account implements Serializable{
         this.status = status;
     }
 
-    
 }

@@ -4,21 +4,42 @@ import com.douwe.banque.data.OperationType;
 import java.util.Date;
 
 /**
+ * Cette classe représente une Operation dans le système. Il est caractérisé par
+ * le type d'opération qu'on a éffectué, la date de l'opération, le compte qui
+ * effectue l'opération et le propriétaire du compte
  *
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
 public class Operation {
-    
+
+    /**
+     * L'identifiant de l'operation
+     */
     private Integer id;
-    
+
+    /**
+     * Le type d'opération traité
+     */
     private OperationType type;
-    
+
+    /**
+     * le jour et l'heure de l'opération
+     */
     private Date dateOperation;
-    
+
+    /**
+     * la description de l'opération
+     */
     private String description;
-    
+
+    /**
+     * Le compte qui éffectue l'opération
+     */
     private Account account;
-    
+
+    /**
+     * l'utilisateur responsable de l'opération
+     */
     private User user;
 
     public Integer getId() {
@@ -68,5 +89,5 @@ public class Operation {
     public void setUser(User user) {
         this.user = user;
     }
-    
+
 }

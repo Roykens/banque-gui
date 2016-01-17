@@ -1,21 +1,42 @@
 package com.douwe.banque.model;
 
 /**
+ * Cette classe représente un client de la banque dans le système. Il est
+ * caractérisé par son nom ,son adresse mail et est également representer comme
+ * un utilisateur du système de la banque
  *
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
 public class Customer {
-    
+
+    /**
+     * L'identifiant du client
+     */
     private Integer id;
-    
+
+    /**
+     * le nom et le prénom du client
+     */
     private String name;
-    
+
+    /**
+     * l' adresse mail du client
+     */
     private String emailAddress;
-    
+
+    /**
+     * le numéro de téléphone du client
+     */
     private String phoneNumber;
-    
+
+    /**
+     * le status : actif ou inactif
+     */
     private int status;
-    
+
+    /**
+     * l'utilisateur que reprensente le client dans la système
+     */
     private User user;
 
     public Integer getId() {
@@ -65,5 +86,5 @@ public class Customer {
     public void setUser(User user) {
         this.user = user;
     }
-    
+
 }

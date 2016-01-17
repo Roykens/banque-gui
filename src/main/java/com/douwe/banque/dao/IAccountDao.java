@@ -6,7 +6,7 @@ import com.douwe.banque.model.Customer;
 import java.util.List;
 
 /**
- * Cette interface définit les opérations nécessairespour la gestion des comptes bancaires
+ * Cette interface définit les opérations nécessaires pour la gestion des comptes bancaires
  * stockés dans un entrepot de données
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
