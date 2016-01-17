@@ -7,9 +7,10 @@ import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueCommonService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -47,9 +48,11 @@ public class UtilisateurPanel extends JPanel {
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
     private IBanqueCommonService commonService;
+    private final MessageHelper helper;
 
-    public UtilisateurPanel(MainMenuPanel parentFrame)  {
+    public UtilisateurPanel(MainMenuPanel parentFrame) {
         super();
+        helper = new MessageHelper();
         try {
             adminService = new BanqueAdminServiceImpl();
             commonService = new BanqueServiceCommonImpl();
@@ -58,17 +61,17 @@ public class UtilisateurPanel extends JPanel {
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
             JLabel lbl;
-            haut.add(lbl = new JLabel("LA LISTE DES UTILISATEURS DE MA BANQUE POPULAIRE"));
+            haut.add(lbl = new JLabel(helper.getProperty("utilisateurPanel.liste")));
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
             contenu.setLayout(new BorderLayout());
             JPanel bas = new JPanel();
             bas.setLayout(new FlowLayout());
-            nouveauBtn = new JButton("Nouveau");
-            supprimerBtn = new JButton("Supprimer");
-            initialiserPasswdBtn = new JButton("Reinitialiser Mot de Passe");
-            filtreBtn = new JButton("Filtrer");
+            nouveauBtn = new JButton(helper.getProperty("pourToutPanel.nouveau"));
+            supprimerBtn = new JButton(helper.getProperty("pourToutPanel.supprimer"));
+            filtreBtn = new JButton(helper.getProperty("pourToutPanel.filtrer"));
+            initialiserPasswdBtn = new JButton(helper.getProperty("utilisateurPanel.reinitialiserMotDePasse"));
             filtreBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -100,8 +103,8 @@ public class UtilisateurPanel extends JPanel {
             nouveauBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    
-                        parent.setContenu(new NouveauUtilisateurPanel(parent));
+
+                    parent.setContenu(new NouveauUtilisateurPanel(parent));
                 }
             });
             initialiserPasswdBtn.addActionListener(new ActionListener() {
@@ -113,12 +116,12 @@ public class UtilisateurPanel extends JPanel {
                             User user = adminService.findUserById((Integer) tableModel.getValueAt(selected, 0));
                             user.setPassword("admin");
                             adminService.saveOrUpdateUser(user);
-                            JOptionPane.showMessageDialog(null, "Le mot de passe est reinitialisé à 'admin'");
+                            JOptionPane.showMessageDialog(null, helper.getProperty("utilisateurPanel.passwordReinitialiser"));
                         } catch (ServiceException ex) {
                             Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucun utilisateur n'est selectionné");
+                        JOptionPane.showMessageDialog(null, helper.getProperty("utilisateurPanel.AucunUtilisateur"));
                     }
                 }
             });
@@ -127,24 +130,24 @@ public class UtilisateurPanel extends JPanel {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = utilisateurTable.getSelectedRow();
                     if (selected >= 0) {
-                        try {   
+                        try {
                             User u = adminService.findUserById((Integer) tableModel.getValueAt(selected, 0));
                             adminService.deleteUser((Integer) tableModel.getValueAt(selected, 0));
                             Operation o = new Operation();
                             o.setAccount(null);
-                            o.setDateOperation( new Date(new java.util.Date().getTime()));
+                            o.setDateOperation(new Date(new java.util.Date().getTime()));
                             o.setDescription("Suppression de l'utilisateur " + tableModel.getValueAt(selected, 1));
                             o.setType(OperationType.suppression);
                             o.setUser(u);
                             commonService.saveOperation(o);
                             tableModel.removeRow(selected);
-                            
+
                         } catch (ServiceException ex) {
-                            JOptionPane.showMessageDialog(null, "Impossible de supprimer cet utilisateur");
+                            JOptionPane.showMessageDialog(null, helper.getProperty("utilisateurPanel.Impossible"));
                             Logger.getLogger(UtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucun utilisateur n'est selectionné");
+                        JOptionPane.showMessageDialog(null, helper.getProperty("utilisateurPanel.AucunUtilisateur"));
                     }
                 }
             });

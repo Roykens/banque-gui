@@ -3,7 +3,7 @@ package com.douwe.banque.gui.client;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.service.IBanqueClientService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueClientServiceImpl;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

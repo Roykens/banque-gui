@@ -5,8 +5,9 @@ import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.model.projection.AccountCustomer;
 import com.douwe.banque.service.IBanqueAdminService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.util.MessageHelper;
 import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -45,9 +46,11 @@ public class ComptePanel extends JPanel {
     private JComboBox<AccountType> type;
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
+    private final MessageHelper helper;
 
-    public ComptePanel(MainMenuPanel parentFrame)  {
+    public ComptePanel(MainMenuPanel parentFrame) {
         super();
+        helper = new MessageHelper();
         try {
             adminService = new BanqueAdminServiceImpl();
             this.parent = parentFrame;
@@ -55,26 +58,26 @@ public class ComptePanel extends JPanel {
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
             JLabel lbl;
-            haut.add(lbl = new JLabel("LA LISTE DES COMPTES DE MA BANQUE POPULAIRE"));
+            haut.add(lbl = new JLabel(helper.getProperty("comptePanel.liste")));
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
             contenu.setLayout(new BorderLayout());
             JPanel bas = new JPanel();
             bas.setLayout(new FlowLayout());
-            nouveauBtn = new JButton("Nouveau");
-            supprimerBtn = new JButton("Supprimer");
-            modifierBtn = new JButton("Modifier");
-            filtreBtn = new JButton("Filtrer");
+            nouveauBtn = new JButton(helper.getProperty("pourToutPanel.nouveau"));
+            supprimerBtn = new JButton(helper.getProperty("pourToutPanel.supprimer"));
+            modifierBtn = new JButton(helper.getProperty("pourToutPanel.modifier"));
+            filtreBtn = new JButton(helper.getProperty("pourToutPanel.filtrer"));
             filtreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     try {
                         String client = nameText.getText();
                         String accountNumber = numberText.getText();
                         AccountType ty = (AccountType) type.getSelectedItem();
-                        List<AccountCustomer> values = adminService.findAccountByCriteria(client, accountNumber, ty);                        
+                        List<AccountCustomer> values = adminService.findAccountByCriteria(client, accountNumber, ty);
                         tableModel.setRowCount(0);
-                        for (AccountCustomer accountCustomer : values) {                            
+                        for (AccountCustomer accountCustomer : values) {
                             tableModel.addRow(new Object[]{accountCustomer.getId(),
                                 accountCustomer.getAccountNumber(),
                                 accountCustomer.getBalance(),
@@ -85,24 +88,24 @@ public class ComptePanel extends JPanel {
                     } catch (ServiceException ex) {
                         Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                  
+
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    
-                        parent.setContenu(new NouveauComptePanel(parent));
+
+                    parent.setContenu(new NouveauComptePanel(parent));
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
-                     
-                            parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
-                        
+
+                        parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucun compte selectionné");
+                        JOptionPane.showMessageDialog(null, helper.getProperty("comptePanel.showMessageAucunCompte"));
                     }
                 }
             });
@@ -137,7 +140,7 @@ public class ComptePanel extends JPanel {
                             Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucune ligne de la table n'est selectionnee");
+                        JOptionPane.showMessageDialog(null,  helper.getProperty("comptePanel.showMessageAucuneLigne"));
                     }
 
                 }
@@ -173,7 +176,7 @@ public class ComptePanel extends JPanel {
             contenu.add(BorderLayout.CENTER, new JScrollPane(compteTable));
             add(BorderLayout.CENTER, contenu);
             List<AccountCustomer> values = adminService.findAllAccountCustomer();
-            for (AccountCustomer accountCustomer : values) {                
+            for (AccountCustomer accountCustomer : values) {
                 tableModel.addRow(new Object[]{accountCustomer.getId(),
                     accountCustomer.getAccountNumber(),
                     accountCustomer.getBalance(),

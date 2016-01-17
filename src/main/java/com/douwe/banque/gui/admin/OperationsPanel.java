@@ -3,8 +3,9 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -42,22 +43,24 @@ public class OperationsPanel extends JPanel {
     private JXDatePicker endDate;
     private IBanqueAdminService adminService;
     private Connection conn;
+    private final MessageHelper helper;
 
-    public OperationsPanel()  {
+    public OperationsPanel() {
         super();
+        helper = new MessageHelper();
         try {
             adminService = new BanqueAdminServiceImpl();
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
             JLabel lbl;
-            haut.add(lbl = new JLabel("LA LISTE DES OPERATIONS DE MA BANQUE POPULAIRE"));
+            haut.add(lbl = new JLabel(helper.getProperty("operationsPanel.liste")));
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
             contenu.setLayout(new BorderLayout());
             JPanel filtrePanel = new JPanel();
-            filtreBtn = new JButton("Filtrer");
+            filtreBtn = new JButton(helper.getProperty("pourToutPanel.filtrer"));
             filtreBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {

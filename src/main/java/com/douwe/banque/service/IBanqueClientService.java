@@ -1,5 +1,6 @@
 package com.douwe.banque.service;
 
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.model.Account;
 import java.util.List;
 

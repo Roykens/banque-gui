@@ -3,7 +3,7 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.service.IBanqueAdminService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

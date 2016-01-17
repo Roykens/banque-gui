@@ -7,7 +7,7 @@ import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueCommonService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;

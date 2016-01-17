@@ -7,7 +7,7 @@ import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueCommonService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.MessageHelper;
@@ -26,12 +26,13 @@ public class MainFrame extends JFrame{
 
     private HeaderPanel headerPanel;
     private JPanel contentPanel;
-    private final MessageHelper helper = new MessageHelper();
+    private final MessageHelper helper;
     private IBanqueCommonService commonService ;
     private IBanqueAdminService adminService;
 
     public MainFrame()  {
         super();
+        helper = new MessageHelper();
         commonService = new BanqueServiceCommonImpl();
         adminService = new BanqueAdminServiceImpl();
         setTitle(helper.getProperty("mainFrame.titre"));

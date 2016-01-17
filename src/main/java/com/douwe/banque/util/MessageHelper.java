@@ -16,8 +16,7 @@ public class MessageHelper {
 
     public MessageHelper() {
         try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("messages.properties");
-            System.out.println(input);
+            InputStream input = getClass().getClassLoader().getResourceAsStream("messages.properties");            
             properties = new Properties();
             properties.load(input);
 

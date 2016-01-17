@@ -1,5 +1,6 @@
 package com.douwe.banque.service;
 
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;

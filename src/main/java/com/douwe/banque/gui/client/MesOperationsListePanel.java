@@ -6,7 +6,7 @@ import com.douwe.banque.model.Account;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueClientService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.service.impl.BanqueClientServiceImpl;
 import java.awt.BorderLayout;

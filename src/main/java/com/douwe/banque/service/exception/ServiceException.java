@@ -1,4 +1,4 @@
-package com.douwe.banque.service;
+package com.douwe.banque.service.exception;
 
 /**
  *

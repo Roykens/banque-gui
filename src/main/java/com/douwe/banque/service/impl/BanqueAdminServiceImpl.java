@@ -15,7 +15,7 @@ import com.douwe.banque.model.User;
 import com.douwe.banque.model.projection.AccountCustomer;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

@@ -7,7 +7,7 @@ import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
 import com.douwe.banque.service.IBanqueCommonService;
-import com.douwe.banque.service.ServiceException;
+import com.douwe.banque.service.exception.ServiceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
