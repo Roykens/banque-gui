@@ -3,15 +3,16 @@ package com.douwe.banque.gui.admin;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,12 +42,13 @@ public class OperationsPanel extends JPanel {
     private JXDatePicker startDate;
     private JXDatePicker endDate;
     private IBanqueAdminService adminService;
-    private Connection conn;
+    private IBanqueCommonService commonService;
 
     public OperationsPanel()  {
         super();
         try {
             adminService = new BanqueAdminServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -67,7 +69,7 @@ public class OperationsPanel extends JPanel {
                         String client = clientText.getText();
                         Date debut = startDate.getDate();
                         Date fin = endDate.getDate();
-                        List<AccountOperation> operations = adminService.findOperationByCriteria(selectedCompte, client, selectedOperation, debut, fin);
+                        List<AccountOperation> operations = commonService.findOperationByCriteria(selectedCompte, client, selectedOperation, debut, fin);
                         tableModel.setNumRows(0);
                         for (AccountOperation accountOperation : operations) {
                             tableModel.addRow(new Object[]{accountOperation.getType(),

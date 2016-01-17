@@ -5,6 +5,7 @@ import com.douwe.banque.model.Customer;
 import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -39,27 +40,29 @@ public class ClientPanel  extends JPanel{
     private JTextField nameText;
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
+    private MessageHelper helper;
 
     public ClientPanel(MainMenuPanel parentFrame){
        // super();
         try {
+            helper = new MessageHelper();
             adminService = new BanqueAdminServiceImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
             JLabel lbl;
-            haut.add(lbl = new JLabel("LA LISTE DES CLIENTS DE MA BANQUE POPULAIRE"));
+            haut.add(lbl = new JLabel(helper.getProperty("clientPanel.liste")));
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
             contenu.setLayout(new BorderLayout());
             JPanel bas = new JPanel();
             bas.setLayout(new FlowLayout());
-            nouveauBtn = new JButton("Nouveau");
-            supprimerBtn = new JButton("Supprimer");
-            modifierBtn = new JButton("Modifier");
-            filtreBtn = new JButton("Filtrer");
+            nouveauBtn = new JButton(helper.getProperty("clientPanel.nouveau"));
+            supprimerBtn = new JButton(helper.getProperty("clientPanel.supprimer"));
+            modifierBtn = new JButton(helper.getProperty("clientPanel.modifier"));
+            filtreBtn = new JButton(helper.getProperty("clientPanel.filtrer"));
             filtreBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -84,6 +87,7 @@ public class ClientPanel  extends JPanel{
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     parent.setContenu(new NouveauClientPanel(parent));
                 }
@@ -95,17 +99,19 @@ public class ClientPanel  extends JPanel{
                     if (selected >= 0) {                      
                             parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));                       
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucun client n'est selectionné");
+                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucunClient"));
                     }
                 }
             });
             supprimerBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
                             adminService.deleteCustomer((Integer)tableModel.getValueAt(selected, 0));                            
                             tableModel.removeRow(selected);
+                            
 //                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
 //                            pst3.setInt(1, OperationType.suppression.ordinal());
 //                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
@@ -120,7 +126,7 @@ public class ClientPanel  extends JPanel{
                             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Aucune donnée n'est selectionnée");
+                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucuneDonne"));
                     }
                 }
             });
@@ -135,7 +141,7 @@ public class ClientPanel  extends JPanel{
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);
-            tableModel = new DefaultTableModel(new Object[]{"id", "Nom", "Adresse Email", "Téléphone"}, 0);
+            tableModel = new DefaultTableModel(new Object[]{helper.getProperty("clientPanel.table.id"), helper.getProperty("clientPanel.table.nom"), helper.getProperty("clientPanel.table.mail"), helper.getProperty("clientPanel.table.phone")}, 0);
             clientTable = new JTable(tableModel);
             clientTable.removeColumn(clientTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(clientTable));

@@ -53,7 +53,7 @@ public interface IBanqueAdminService {
     
     public List<AccountCustomer> findAccountByCriteria(String customerName, String accountNumber, AccountType type) throws ServiceException;
     
-    public List<AccountOperation> findOperationByCriteria(String accountNumber, String userName, OperationType opType, Date debut, Date fin) throws ServiceException;
+    
 
     public User findUserById(Integer integer) throws ServiceException;
 
@@ -69,6 +69,6 @@ public interface IBanqueAdminService {
 
     public Customer getSingleCustomerByName(String customer) throws ServiceException;
 
-    public List<AccountOperation> findOperationFromCustomerAccounts(int customerId) throws ServiceException;
+    
     
 }

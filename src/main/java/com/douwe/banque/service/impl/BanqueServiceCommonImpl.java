@@ -3,11 +3,16 @@ package com.douwe.banque.service.impl;
 
 import com.douwe.banque.dao.DaoFactory;
 import com.douwe.banque.dao.DataAccessException;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
+import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.ServiceException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +60,26 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService{
             Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServiceException(ex);
         }
+    }
+    
+    @Override
+    public List<AccountOperation> findOperationByCriteria(String accountNumber, String userName, OperationType opType, Date debut, Date fin) throws ServiceException {
+        List<AccountOperation> result = new ArrayList<>();
+        try {
+            for (Operation operation : daoFactory.getOperationDao().findAll()) {
+                if((userName.isEmpty() || operation.getUser().getLogin().toLowerCase().contains(userName.toLowerCase()))
+                        && (accountNumber.isEmpty() || operation.getAccount().getAccountNumber().toLowerCase().contains(accountNumber.toLowerCase()))
+                        && ((opType == null) || operation.getType() == opType)
+                        && ((debut == null) || operation.getDateOperation().after(debut))
+                        && ((fin == null) || operation.getDateOperation().before(fin)))
+                    result.add(new AccountOperation(operation.getUser().getLogin(), operation.getAccount().getAccountNumber(), operation));
+            }
+            
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
     }
     
 }

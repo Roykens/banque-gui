@@ -3,13 +3,9 @@ package com.douwe.banque.gui.client;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.model.Account;
-import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueClientService;
-import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.ServiceException;
-import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
 import com.douwe.banque.service.impl.BanqueClientServiceImpl;
-import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
@@ -18,7 +14,6 @@ import java.awt.Font;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,17 +34,14 @@ public class TransfertPanel extends JPanel {
     private JTextField amount;
     private JButton transferBtn;
     private MainMenuPanel parent;
-    private IBanqueAdminService adminService;
     private IBanqueClientService clientService;
-    private IBanqueCommonService commonService;
-    private Connection conn;
 
     public TransfertPanel(MainMenuPanel parentFrame) {
         super();
         try {
-            adminService = new BanqueAdminServiceImpl();
+        
             clientService = new BanqueClientServiceImpl();
-            commonService = new BanqueServiceCommonImpl();
+            
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
