@@ -381,6 +381,20 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
         return null;
     }
 
+    @Override
+    public User getUserByAccount(int id) throws ServiceException {
+        User user = null;
+        Account account = this.findAccountById(id);
+        if(account != null){
+            try {
+                return daoFactory.getUserDao().findUserByAccount(account);
+            } catch (DataAccessException ex) {
+                Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
+    }
+
     
     
 }

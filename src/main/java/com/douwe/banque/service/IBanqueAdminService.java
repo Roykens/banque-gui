@@ -68,6 +68,8 @@ public interface IBanqueAdminService {
     public Account findAccountById(int id) throws ServiceException;
 
     public Customer getSingleCustomerByName(String customer) throws ServiceException;
+    
+    public User getUserByAccount(int id) throws ServiceException;
 
     
     

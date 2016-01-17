@@ -1,10 +1,14 @@
 package com.douwe.banque.gui.admin;
 
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Customer;
+import com.douwe.banque.model.Operation;
 import com.douwe.banque.service.IBanqueAdminService;
+import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,6 +17,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +45,7 @@ public class ClientPanel  extends JPanel{
     private JTextField nameText;
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
+    private IBanqueCommonService commonService;
     private MessageHelper helper;
 
     public ClientPanel(MainMenuPanel parentFrame){
@@ -47,6 +53,7 @@ public class ClientPanel  extends JPanel{
         try {
             helper = new MessageHelper();
             adminService = new BanqueAdminServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel haut = new JPanel();
@@ -111,17 +118,13 @@ public class ClientPanel  extends JPanel{
                         try {
                             adminService.deleteCustomer((Integer)tableModel.getValueAt(selected, 0));                            
                             tableModel.removeRow(selected);
-                            
-//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-//                            pst3.setInt(1, OperationType.suppression.ordinal());
-//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-//                            pst3.setString(3, "Suppression du client " + tableModel.getValueAt(selected, 1));
-//                            pst3.setInt(4, 1);
-//                            pst3.setInt(5, 1);
-//                            pst3.executeUpdate();
-//                            pst3.close();
-//                            conn.commit();
-//                            conn.close();
+                            Operation o = new Operation();
+                            o.setAccount(null);
+                            o.setDateOperation(new Date(new java.util.Date().getTime()));
+                            o.setDescription("Suppression du client " + tableModel.getValueAt(selected, 1));
+                            o.setType(OperationType.suppression);
+                            o.setUser(null);
+                            commonService.saveOperation(o);
                         } catch (ServiceException ex) {
                             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
