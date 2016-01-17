@@ -27,9 +27,7 @@ public class MessageHelper {
 
     }
 
-    public void toto() {
-
-    }
+ 
 
     public String getProperty(String key) {
         return properties.getProperty(key);
