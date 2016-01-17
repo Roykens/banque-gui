@@ -44,7 +44,10 @@ public class NouveauUtilisateurPanel extends JPanel {
     private IBanqueCommonService commonService = new BanqueServiceCommonImpl();
 
     public NouveauUtilisateurPanel(MainMenuPanel parentFrame)  {
+        
         super();
+        adminService = new BanqueAdminServiceImpl();
+        commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(20, 20));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));

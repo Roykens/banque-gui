@@ -40,12 +40,14 @@ public class NouveauDepotPanel extends JPanel {
     private JButton btnEnregistrer;
     private MainMenuPanel parent;
     
-    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
-    private IBanqueCommonService commonService= new BanqueServiceCommonImpl();
+    private IBanqueAdminService adminService ;
+    private IBanqueCommonService commonService;
     private Connection conn;
 
     public NouveauDepotPanel(MainMenuPanel parentFrame)  {
         super();
+        adminService = new BanqueAdminServiceImpl();
+        commonService= new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
