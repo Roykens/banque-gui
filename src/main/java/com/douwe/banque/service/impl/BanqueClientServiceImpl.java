@@ -7,6 +7,7 @@ import com.douwe.banque.model.Account;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
+import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueClientService;
 import com.douwe.banque.service.exception.ServiceException;
 import java.util.ArrayList;
@@ -73,5 +74,22 @@ public class BanqueClientServiceImpl implements IBanqueClientService{
             throw new ServiceException(ex);
         }        
     }
+    
+        @Override
+    public List<AccountOperation> findOperationFromCustomerAccounts(int customerId) throws ServiceException {
+         List<AccountOperation> result = new ArrayList<>();
+        try {  
+            Customer customer = daoFactory.getCustomerDao().findById(customerId);
+            List<Operation> ops = daoFactory.getOperationDao().findForCustomer(customer);        
+            for (Operation operation : ops) {
+                result.add(new AccountOperation(operation.getUser().getLogin(), operation.getAccount().getAccountNumber(), operation));
+            }
+        } catch (DataAccessException ex) {
+            Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServiceException(ex);
+        }
+        return result;
+    }
+
     
 }

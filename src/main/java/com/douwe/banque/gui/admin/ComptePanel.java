@@ -1,21 +1,26 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.AccountType;
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Account;
+import com.douwe.banque.model.Operation;
+import com.douwe.banque.model.User;
 import com.douwe.banque.model.projection.AccountCustomer;
 import com.douwe.banque.service.IBanqueAdminService;
+
 import com.douwe.banque.service.exception.ServiceException;
+import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.MessageHelper;
-import com.douwe.banque.util.ModelDeBasePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,13 +51,16 @@ public class ComptePanel extends JPanel {
     private JComboBox<AccountType> type;
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
-    private final MessageHelper helper;
+    private IBanqueCommonService commonService;
+    private MessageHelper helper;
 
     public ComptePanel(MainMenuPanel parentFrame) {
         super();
         helper = new MessageHelper();
         try {
             adminService = new BanqueAdminServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
+            helper = new MessageHelper();
             this.parent = parentFrame;
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
@@ -65,11 +73,12 @@ public class ComptePanel extends JPanel {
             contenu.setLayout(new BorderLayout());
             JPanel bas = new JPanel();
             bas.setLayout(new FlowLayout());
-            nouveauBtn = new JButton(helper.getProperty("pourToutPanel.nouveau"));
-            supprimerBtn = new JButton(helper.getProperty("pourToutPanel.supprimer"));
-            modifierBtn = new JButton(helper.getProperty("pourToutPanel.modifier"));
-            filtreBtn = new JButton(helper.getProperty("pourToutPanel.filtrer"));
+            nouveauBtn = new JButton(helper.getProperty("comptePanel.nouveau"));
+            supprimerBtn = new JButton(helper.getProperty("comptePanel.supprimer"));
+            modifierBtn = new JButton(helper.getProperty("comptePanel.modifier"));
+            filtreBtn = new JButton(helper.getProperty("comptePanel.filtrer"));
             filtreBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     try {
                         String client = nameText.getText();
@@ -92,12 +101,15 @@ public class ComptePanel extends JPanel {
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
 
+                @Override
+                public void actionPerformed(ActionEvent ae) {
                     parent.setContenu(new NouveauComptePanel(parent));
+
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
@@ -105,11 +117,14 @@ public class ComptePanel extends JPanel {
                         parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
 
                     } else {
-                        JOptionPane.showMessageDialog(null, helper.getProperty("comptePanel.showMessageAucunCompte"));
+
+                        JOptionPane.showMessageDialog(null, helper.getProperty("comptePanel.aucunCompte"));
+
                     }
                 }
             });
             supprimerBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
@@ -117,30 +132,22 @@ public class ComptePanel extends JPanel {
                             String accountNumber = (String) tableModel.getValueAt(selected, 1);
                             //conn.setAutoCommit(false);
                             Account acc = adminService.findAccountByNumber(accountNumber);
+                            User user = adminService.getUserByAccount(acc.getId());
                             adminService.deleteAccount(acc.getId());
-//                            Operation ope = new Operation();
-//                            ope.setDateOperation(new Date(new java.util.Date().getTime()));
-//                            ope.setAccount(acc);
-//                            ope.setDescription("Cloture du compte " + accountNumber);
-//                            ope.setType(OperationType.cloture);
-//                            ope.setUser(null);
-//                            PreparedStatement st = conn.prepareStatement("insert into operations(operationType,dateOperation,description,account_id, user_id) values(?,?,?,?,?)");
-//                            st.setInt(1, OperationType.cloture.ordinal());
-//                            st.setDate(2, new Date(new java.util.Date().getTime()));
-//                            st.setString(3, "Cloture du compte " + accountNumber);
-//                            st.setInt(4, (Integer) tableModel.getValueAt(selected, 0));
-//                            st.setInt(5, 1);
-//                            st.executeUpdate();
-//                            pst.executeUpdate();
-//                            conn.commit();
-//                            pst.close();
-//                            conn.close();
-//                            tableModel.removeRow(selected);
+                            Operation ope = new Operation();
+                            ope.setDateOperation(new Date(new java.util.Date().getTime()));
+                            ope.setAccount(acc);
+                            ope.setDescription("Cloture du compte " + accountNumber);
+                            ope.setType(OperationType.cloture);
+                            ope.setUser(user);
+                            commonService.saveOperation(ope);
+                            tableModel.removeRow(selected);
                         } catch (ServiceException ex) {
                             Logger.getLogger(ComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null,  helper.getProperty("comptePanel.showMessageAucuneLigne"));
+
+                        JOptionPane.showMessageDialog(null, helper.getProperty("comptePanel.aucuneLigne"));
                     }
 
                 }
@@ -150,13 +157,13 @@ public class ComptePanel extends JPanel {
             bas.add(supprimerBtn);
             JPanel filtrePanel = new JPanel();
             filtrePanel.setLayout(new FlowLayout());
-            filtrePanel.add(new JLabel("Nom Client"));
+            filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.nom")));
             filtrePanel.add(nameText = new JTextField());
             nameText.setPreferredSize(new Dimension(100, 25));
-            filtrePanel.add(new JLabel("Numero Compte"));
+            filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.numero")));
             filtrePanel.add(numberText = new JTextField());
             numberText.setPreferredSize(new Dimension(100, 25));
-            filtrePanel.add(new JLabel("Type Compte"));
+            filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.type")));
             filtrePanel.add(type = new JComboBox<AccountType>());
             type.setPreferredSize(new Dimension(100, 25));
             type.addItem(null);
@@ -165,7 +172,7 @@ public class ComptePanel extends JPanel {
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);
-            tableModel = new DefaultTableModel(new Object[]{"id", "Numero Compte", "Solde", "Date création", "Type", "Client"}, 0) {
+            tableModel = new DefaultTableModel(new Object[]{helper.getProperty("comptePanel.table.id"), helper.getProperty("comptePanel.table.numero"), helper.getProperty("comptePanel.table.solde"), helper.getProperty("comptePanel.table.date"), helper.getProperty("comptePanel.table.type"), helper.getProperty("comptePanel.table.client")}, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;

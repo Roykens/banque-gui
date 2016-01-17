@@ -67,7 +67,7 @@ public abstract class HeaderPanel extends JPanel{
         username.setVisible(status);
         deconnexion.setVisible(status);
         if(status){
-              username.setText("Bonjour "+UserInfo.getUsername()+", ");
+              username.setText(helper.getProperty("header.presentation")+UserInfo.getUsername()+", ");
         }
     }
 

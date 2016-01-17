@@ -70,6 +70,7 @@ public class NouveauClientPanel extends JPanel{
         builder.append(btnEnregistrer = new JButton("Enrégistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 if (id <= 0) {
                     try {

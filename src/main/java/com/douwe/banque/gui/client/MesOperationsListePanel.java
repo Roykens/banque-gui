@@ -4,11 +4,14 @@ import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.model.projection.AccountOperation;
-import com.douwe.banque.service.IBanqueAdminService;
 import com.douwe.banque.service.IBanqueClientService;
+
 import com.douwe.banque.service.exception.ServiceException;
-import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+
+import com.douwe.banque.service.IBanqueCommonService;
+
 import com.douwe.banque.service.impl.BanqueClientServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,7 +19,6 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -44,14 +46,14 @@ public class MesOperationsListePanel extends JPanel {
     private DefaultTableModel tableModel;
     private JButton filtreBtn;
     private final String accountQuery = "select accountNumber from account where customer_id=?";
-    private Connection conn;
-    private IBanqueAdminService adminService;
     private IBanqueClientService clientService;
-    public MesOperationsListePanel()  {
+    private IBanqueCommonService commonService;
+
+    public MesOperationsListePanel() {
         super();
         try {
-            adminService = new BanqueAdminServiceImpl();
             clientService = new BanqueClientServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             JPanel hautPanel = new JPanel(new GridLayout(2, 1));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -93,15 +95,15 @@ public class MesOperationsListePanel extends JPanel {
                         String selectedOperation = (String) operations.getSelectedItem();
                         Date debut = startDate.getDate();
                         Date fin = endDate.getDate();
-                        List<AccountOperation> result = adminService.findOperationByCriteria(selectedCompte, UserInfo.getUsername(), OperationType.valueOf(selectedOperation), debut, fin);
-                    tableModel.setNumRows(0);
-                    for (AccountOperation accountOperation : result) {
-                        tableModel.addRow(new Object[]{accountOperation.getType(),
-                            accountOperation.getAccountNumber(),
-                            accountOperation.getDateOperation(),
-                            accountOperation.getUsername(),
-                            accountOperation.getDescription()});
-                    }
+                        List<AccountOperation> result = commonService.findOperationByCriteria(selectedCompte, UserInfo.getUsername(), OperationType.valueOf(selectedOperation), debut, fin);
+                        tableModel.setNumRows(0);
+                        for (AccountOperation accountOperation : result) {
+                            tableModel.addRow(new Object[]{accountOperation.getType(),
+                                accountOperation.getAccountNumber(),
+                                accountOperation.getDateOperation(),
+                                accountOperation.getUsername(),
+                                accountOperation.getDescription()});
+                        }
                     } catch (ServiceException ex) {
                         Logger.getLogger(MesOperationsListePanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -109,17 +111,17 @@ public class MesOperationsListePanel extends JPanel {
             });
             comptes.addItem("");
             List<Account> accounts = clientService.findAccountByCustomerId(UserInfo.getCustomerId());
-        for (Account account : accounts) {
-            comptes.addItem(account.getAccountNumber());
-        }
-        List<AccountOperation> values = adminService.findOperationFromCustomerAccounts(UserInfo.getCustomerId());
-        for (AccountOperation accountOperation : values) {
-            tableModel.addRow(new Object[]{accountOperation.getType(),
-                accountOperation.getAccountNumber(),
-                accountOperation.getDateOperation(),
-                accountOperation.getUsername(),
-                accountOperation.getDescription()});
-        }
+            for (Account account : accounts) {
+                comptes.addItem(account.getAccountNumber());
+            }
+            List<AccountOperation> values = clientService.findOperationFromCustomerAccounts(UserInfo.getCustomerId());
+            for (AccountOperation accountOperation : values) {
+                tableModel.addRow(new Object[]{accountOperation.getType(),
+                    accountOperation.getAccountNumber(),
+                    accountOperation.getDateOperation(),
+                    accountOperation.getUsername(),
+                    accountOperation.getDescription()});
+            }
         } catch (ServiceException ex) {
             Logger.getLogger(MesOperationsListePanel.class.getName()).log(Level.SEVERE, null, ex);
         }

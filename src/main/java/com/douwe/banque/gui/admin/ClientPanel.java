@@ -1,10 +1,15 @@
 package com.douwe.banque.gui.admin;
 
+import com.douwe.banque.data.OperationType;
 import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.Customer;
+import com.douwe.banque.model.Operation;
 import com.douwe.banque.service.IBanqueAdminService;
+
+import com.douwe.banque.service.IBanqueCommonService;
 import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueAdminServiceImpl;
+import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
 import com.douwe.banque.util.MessageHelper;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,6 +18,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class ClientPanel  extends JPanel{
+public class ClientPanel extends JPanel {
 
     private JButton nouveauBtn;
     private JButton supprimerBtn;
@@ -40,13 +46,15 @@ public class ClientPanel  extends JPanel{
     private JTextField nameText;
     private MainMenuPanel parent;
     private IBanqueAdminService adminService;
-    private final MessageHelper helper ;
+    private MessageHelper helper;
 
-    public ClientPanel(MainMenuPanel parentFrame){
-       // super();
-        helper = new MessageHelper();
-        try {            
-            adminService = new BanqueAdminServiceImpl();             
+    private IBanqueCommonService commonService;
+
+    public ClientPanel(MainMenuPanel parentFrame) {        
+        try {
+            helper = new MessageHelper();
+            adminService = new BanqueAdminServiceImpl();
+            commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
             this.parent = parentFrame;
             JPanel haut = new JPanel();
@@ -59,10 +67,10 @@ public class ClientPanel  extends JPanel{
             contenu.setLayout(new BorderLayout());
             JPanel bas = new JPanel();
             bas.setLayout(new FlowLayout());
-            nouveauBtn = new JButton(helper.getProperty("pourToutPanel.nouveau"));
-            supprimerBtn = new JButton(helper.getProperty("pourToutPanel.supprimer"));
-            modifierBtn = new JButton(helper.getProperty("pourToutPanel.modifier"));
-            filtreBtn = new JButton(helper.getProperty("pourToutPanel.filtrer"));
+            nouveauBtn = new JButton(helper.getProperty("clientPanel.nouveau"));
+            supprimerBtn = new JButton(helper.getProperty("clientPanel.supprimer"));
+            modifierBtn = new JButton(helper.getProperty("clientPanel.modifier"));
+            filtreBtn = new JButton(helper.getProperty("clientPanel.filtrer"));
             filtreBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -72,21 +80,22 @@ public class ClientPanel  extends JPanel{
                 private void selectCustomerbyStatus() throws HeadlessException {
                     String name = nameText.getText();
                     try {
-                        List<Customer> customers = adminService.findCustomerByName(name);                            
-                            tableModel.setRowCount(0);
-                            for (Customer customer : customers) {                                
-                                tableModel.addRow(new Object[]{customer.getId(),
-                                    customer.getName(),
-                                    customer.getEmailAddress(),
-                                    customer.getPhoneNumber()
-                                });
-                            }
+                        List<Customer> customers = adminService.findCustomerByName(name);
+                        tableModel.setRowCount(0);
+                        for (Customer customer : customers) {
+                            tableModel.addRow(new Object[]{customer.getId(),
+                                customer.getName(),
+                                customer.getEmailAddress(),
+                                customer.getPhoneNumber()
+                            });
+                        }
                     } catch (ServiceException ex) {
                         Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
             nouveauBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     parent.setContenu(new NouveauClientPanel(parent));
                 }
@@ -95,35 +104,33 @@ public class ClientPanel  extends JPanel{
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
-                    if (selected >= 0) {                      
-                            parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));                       
+                    if (selected >= 0) {
+                        parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
                     } else {
-                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.showMessageAucunClient"));
+                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucunClient"));
                     }
                 }
             });
             supprimerBtn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            adminService.deleteCustomer((Integer)tableModel.getValueAt(selected, 0));                            
+                            adminService.deleteCustomer((Integer) tableModel.getValueAt(selected, 0));
                             tableModel.removeRow(selected);
-//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-//                            pst3.setInt(1, OperationType.suppression.ordinal());
-//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-//                            pst3.setString(3, "Suppression du client " + tableModel.getValueAt(selected, 1));
-//                            pst3.setInt(4, 1);
-//                            pst3.setInt(5, 1);
-//                            pst3.executeUpdate();
-//                            pst3.close();
-//                            conn.commit();
-//                            conn.close();
+                            Operation o = new Operation();
+                            o.setAccount(null);
+                            o.setDateOperation(new Date(new java.util.Date().getTime()));
+                            o.setDescription("Suppression du client " + tableModel.getValueAt(selected, 1));
+                            o.setType(OperationType.suppression);
+                            o.setUser(null);
+                            commonService.saveOperation(o);
                         } catch (ServiceException ex) {
                             Logger.getLogger(ClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.showMessageAucuneDonnee"));
+                        JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucuneDonne"));
                     }
                 }
             });
@@ -138,7 +145,7 @@ public class ClientPanel  extends JPanel{
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);
-            tableModel = new DefaultTableModel(new Object[]{"id", "Nom", "Adresse Email", "Téléphone"}, 0);
+            tableModel = new DefaultTableModel(new Object[]{helper.getProperty("clientPanel.table.id"), helper.getProperty("clientPanel.table.nom"), helper.getProperty("clientPanel.table.mail"), helper.getProperty("clientPanel.table.phone")}, 0);
             clientTable = new JTable(tableModel);
             clientTable.removeColumn(clientTable.getColumnModel().getColumn(0));
             contenu.add(BorderLayout.CENTER, new JScrollPane(clientTable));
@@ -156,5 +163,4 @@ public class ClientPanel  extends JPanel{
         }
     }
 
-  
 }

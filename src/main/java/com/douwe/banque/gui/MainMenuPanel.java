@@ -48,6 +48,7 @@ public class MainMenuPanel extends JPanel {
         mesComptes = new JXHyperlink();
         mesComptes.setText(helper.getProperty("mainMenuPanel.mesComptes"));
         mesComptes.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                
                     setContenu(new MesCompteListePanel());
@@ -59,6 +60,7 @@ public class MainMenuPanel extends JPanel {
         mesOperations = new JXHyperlink();
         mesOperations.setText(helper.getProperty("mainMenuPanel.mesOperations"));
         mesOperations.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
              
                     setContenu(new MesOperationsListePanel());
@@ -70,6 +72,7 @@ public class MainMenuPanel extends JPanel {
         tranfer = new JXHyperlink();
         tranfer.setText(helper.getProperty("mainMenuPanel.transfert"));
         tranfer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                
                     setContenu(new TransfertPanel(MainMenuPanel.this));
@@ -86,6 +89,7 @@ public class MainMenuPanel extends JPanel {
         };
         utilisateurs.setText(helper.getProperty("mainMenuPanel.utilisateurs"));
         utilisateurs.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                
                     setContenu(new UtilisateurPanel(MainMenuPanel.this));
@@ -97,6 +101,7 @@ public class MainMenuPanel extends JPanel {
         comptes = new JXHyperlink();
         comptes.setText(helper.getProperty("mainMenuPanel.comptes"));
         comptes.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                
                     setContenu(new ComptePanel(MainMenuPanel.this));
@@ -110,9 +115,10 @@ public class MainMenuPanel extends JPanel {
             public boolean isVisible() {
                 return UserInfo.getRole() == RoleType.admin;
             }
-        };;
+        };
         operations.setText(helper.getProperty("mainMenuPanel.operations"));
         operations.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
               
                     setContenu(new OperationsPanel());
@@ -124,6 +130,7 @@ public class MainMenuPanel extends JPanel {
         customer = new JXHyperlink();
         customer.setText(helper.getProperty("mainMenuPanel.clients"));
         customer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
               
                     setContenu(new ClientPanel(MainMenuPanel.this));
@@ -156,6 +163,7 @@ public class MainMenuPanel extends JPanel {
         debit.setUnclickedColor(Color.blue);
         debit.setClickedColor(Color.blue);
         debit.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                     setContenu(new NouveauDebitPanel(MainMenuPanel.this));               
             }
@@ -165,6 +173,7 @@ public class MainMenuPanel extends JPanel {
         credit.setUnclickedColor(Color.blue);
         credit.setClickedColor(Color.blue);
         credit.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {setContenu(new NouveauDepotPanel(MainMenuPanel.this));
             }
         });
@@ -186,6 +195,7 @@ public class MainMenuPanel extends JPanel {
         profilPane.add(profil = new JXHyperlink());
         profil.setText(helper.getProperty("mainMenuPanel.profil"));
         profil.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 JOptionPane.showMessageDialog(null, "Si j'implémente tout alors que feront mes étudiants?");
             }

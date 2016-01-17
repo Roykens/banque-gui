@@ -3,6 +3,7 @@ package com.douwe.banque.dao.jdbcImpl;
 import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.IUserDao;
 import com.douwe.banque.data.RoleType;
+import com.douwe.banque.model.Account;
 import com.douwe.banque.model.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -175,5 +176,30 @@ public class UserDaoJDBC implements IUserDao {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
         }
+    }
+
+    @Override
+    public User findUserByAccount(Account account) throws DataAccessException {
+        User user = null;
+        try {
+            
+            Connection conn = JDBCConnectionFactory.getConnection();
+            PreparedStatement psmt = conn.prepareStatement("select u.id , u.username, u.passwd, u.role, u.status from users u where u.id=(select customer.user_id from customer  where customer.id= (select account.customer_id from account where account.id= ?))");
+            psmt.setInt(1, account.getId());
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setLogin(rs.getString("username"));
+                user.setPassword(rs.getString("passwd"));
+                user.setRole(RoleType.values()[rs.getInt("role")]);
+                user.setStatus(rs.getInt("status"));
+            }
+            rs.close();
+            psmt.close();            
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return user;
     }
 }

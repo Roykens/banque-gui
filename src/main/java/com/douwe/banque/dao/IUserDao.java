@@ -1,6 +1,7 @@
 package com.douwe.banque.dao;
 
 
+import com.douwe.banque.model.Account;
 import com.douwe.banque.model.User;
 import java.util.List;
 
@@ -66,5 +67,13 @@ public interface IUserDao {
      * @throws DataAccessException si un événement non prévu survient
      */
     public List<User> findByStatus(int status) throws DataAccessException;
+    
+    /**
+     * renvoie l'utilisateur dont le compte est passé en paramètre
+     * @param account le compte dont on cherche l'utilisateur
+     * @return l'utilisateur dont le compte est passé en paramètre
+     * @throws DataAccessException si aucun utilisateur ne correspond à ce compte ou si un événement non prévu survient
+     */
+    public User findUserByAccount(Account account) throws DataAccessException;
     
 }
