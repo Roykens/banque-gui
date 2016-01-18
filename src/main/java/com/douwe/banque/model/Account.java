@@ -34,12 +34,12 @@ public class Account implements Serializable {
     /**
      * le type de compte : courant ou depot
      */
-    private AccountType type;
+    private transient AccountType type;
 
     /**
      * l'utilisateur du compte
      */
-    private Customer customer;
+    private transient Customer customer;
 
     /**
      * le status du compte : active ou inactif

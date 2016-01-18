@@ -1,6 +1,7 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.OperationType;
+import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
 
@@ -43,11 +44,11 @@ public class OperationsPanel extends JPanel {
     private JTextField compteText;
     private JComboBox<OperationType> type;
     private JButton filtreBtn;
-    private JXDatePicker startDate;
-    private JXDatePicker endDate;
-    private IBanqueAdminService adminService;
-    private MessageHelper helper;
-    private IBanqueCommonService commonService;
+    private transient JXDatePicker startDate;
+    private transient JXDatePicker endDate;
+    private transient MessageHelper helper;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
     public OperationsPanel() {
         super();

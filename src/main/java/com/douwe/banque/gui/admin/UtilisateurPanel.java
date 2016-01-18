@@ -45,10 +45,10 @@ public class UtilisateurPanel extends JPanel {
     private JComboBox<RoleType> role;
     private JTable utilisateurTable;
     private DefaultTableModel tableModel;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService;
-    private IBanqueCommonService commonService;
-    private final MessageHelper helper;
+    private transient MainMenuPanel parent;
+    private transient MessageHelper helper;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
     public UtilisateurPanel(MainMenuPanel parentFrame) {
         super();

@@ -34,8 +34,8 @@ public class TransfertPanel extends JPanel {
     private JTextField destination;
     private JTextField amount;
     private JButton transferBtn;
-    private MainMenuPanel parent;
-    private IBanqueClientService clientService;
+    private transient MainMenuPanel parent;
+    private transient IBanqueClientService clientService;
 
     public TransfertPanel(MainMenuPanel parentFrame) {
         super();

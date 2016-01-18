@@ -34,20 +34,18 @@ import javax.swing.JTextField;
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
 public class NouveauDepotPanel extends JPanel {
-    
+
     private JTextField accountText;
     private JTextField amountText;
     private JButton btnEnregistrer;
-    private MainMenuPanel parent;
-    
-    private IBanqueAdminService adminService ;
-    private IBanqueCommonService commonService;
-    private Connection conn;
+    private transient MainMenuPanel parent;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
-    public NouveauDepotPanel(MainMenuPanel parentFrame)  {
+    public NouveauDepotPanel(MainMenuPanel parentFrame) {
         super();
         adminService = new BanqueAdminServiceImpl();
-        commonService= new BanqueServiceCommonImpl();
+        commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         this.parent = parentFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -86,7 +84,7 @@ public class NouveauDepotPanel extends JPanel {
                         return;
                     }
                     Account acc = adminService.findAccountByNumber(account);
-                    if(acc != null){
+                    if (acc != null) {
                         adminService.credit(account, amount, UserInfo.getUserId());
                         Operation o = new Operation();
                         o.setAccount(acc);
@@ -97,9 +95,8 @@ public class NouveauDepotPanel extends JPanel {
                         o.setUser(u);
                         commonService.saveOperation(o);
                         JOptionPane.showMessageDialog(null, "Opération réalisée avec succès");
-                            parent.setContenu(EmptyPanel.emptyPanel());
-                    }
-                    else {
+                        parent.setContenu(EmptyPanel.emptyPanel());
+                    } else {
                         JOptionPane.showMessageDialog(null, "Le compte specifié n'existe pas");
                     }
                 } catch (ServiceException ex) {

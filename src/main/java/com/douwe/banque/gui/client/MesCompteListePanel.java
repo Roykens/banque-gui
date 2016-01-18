@@ -26,7 +26,7 @@ public class MesCompteListePanel extends JPanel {
     private JTable compteTable;
     private DefaultTableModel model;
     private static final String request = "select * from account where customer_id=?";
-    private IBanqueClientService clientService;
+    private transient IBanqueClientService clientService;
 
     public MesCompteListePanel() {
         super();

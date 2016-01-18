@@ -38,9 +38,9 @@ public class NouveauDebitPanel extends JPanel {
     private JTextField accountText;
     private JTextField amountText;
     private JButton btnEnregistrer;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService ;
-    private IBanqueCommonService commonService;
+    private transient MainMenuPanel parent;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
     public NouveauDebitPanel(MainMenuPanel parentFrame) {
         super();

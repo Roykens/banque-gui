@@ -39,12 +39,12 @@ public class NouveauUtilisateurPanel extends JPanel {
     private JPasswordField passwdText2;
     private JComboBox<RoleType> role;
     private JButton enregistrer;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService = new BanqueAdminServiceImpl();
-    private IBanqueCommonService commonService = new BanqueServiceCommonImpl();
+    private transient MainMenuPanel parent;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
-    public NouveauUtilisateurPanel(MainMenuPanel parentFrame)  {
-        
+    public NouveauUtilisateurPanel(MainMenuPanel parentFrame) {
+
         super();
         adminService = new BanqueAdminServiceImpl();
         commonService = new BanqueServiceCommonImpl();
@@ -101,7 +101,7 @@ public class NouveauUtilisateurPanel extends JPanel {
                     o.setType(OperationType.debit);
                     o.setUser(user);
                     o.setDescription("Ajout de l'utilisateur " + login.toLowerCase());
-                    commonService.saveOperation(o);                    
+                    commonService.saveOperation(o);
                     parent.setContenu(new UtilisateurPanel(parent));
                 } catch (ServiceException ex) {
                     JOptionPane.showMessageDialog(null, "Impossible de créer le compte");
