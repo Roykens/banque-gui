@@ -301,8 +301,8 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
     }
     
     @Override
-    public Customer getSingleCustomerByName(String customer) throws ServiceException {        
-        try {            
+    public Customer getSingleCustomerByName(String customer) throws ServiceException {
+        try {
             Customer cust = daoFactory.getCustomerDao().findByName(customer);
             if ((cust != null) && (cust.getStatus() != 0))
                     return null;
