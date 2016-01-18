@@ -47,7 +47,7 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService {
     @Override
     public Customer findCustomerByLogin(String login) throws ServiceException {
         try {
-            User user = daoFactory.getUserDao().findByLogin(login);
+            User user = daoFactory.getUserDao().findByLogin(login);            
             return daoFactory.getCustomerDao().findByUser(user);
         } catch (DataAccessException ex) {
             Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);

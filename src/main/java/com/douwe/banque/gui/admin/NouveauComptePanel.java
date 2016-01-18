@@ -47,7 +47,6 @@ public class NouveauComptePanel extends JPanel {
 
     public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) {
         this(parentFrame);
-
         this.id = account_id;
         if (this.id > 0) {
             btnEnregistrer.setText("Modifier");
@@ -72,6 +71,8 @@ public class NouveauComptePanel extends JPanel {
     public NouveauComptePanel(MainMenuPanel parentFrame) {
         super();
         this.parent = parentFrame;
+        adminService = new BanqueAdminServiceImpl();
+        commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel lbl;
@@ -82,8 +83,8 @@ public class NouveauComptePanel extends JPanel {
         builder.append("Numéro Compte", numberText = new JTextField());
         builder.append("Solde initial", balanceText = new JTextField());
         builder.append("Type de Compte", typeText = new JComboBox<AccountType>());
-        typeText.addItem(AccountType.deposit);
-        typeText.addItem(AccountType.saving);
+        typeText.addItem(AccountType.DEPOSIT);
+        typeText.addItem(AccountType.SAVING);
         builder.append("Titulaire", customerText = new JTextField());
         builder.append(btnEnregistrer = new JButton("Enrégistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
@@ -91,8 +92,7 @@ public class NouveauComptePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 if (id > 0) {
-                    try {
-                        // here I'm updating an account
+                    try {                        
                         String number = numberText.getText();
                         AccountType type = (AccountType) typeText.getSelectedItem();
                         if ((number == null) || ("".equals(number))) {
@@ -113,8 +113,7 @@ public class NouveauComptePanel extends JPanel {
                     }
 
                 } else {
-                    try {
-                        // I need to get the customer_id
+                    try {                        
                         String customer = customerText.getText();
                         String number = numberText.getText();
                         String balanceT = balanceText.getText();
@@ -154,7 +153,7 @@ public class NouveauComptePanel extends JPanel {
                             Operation operation = new Operation();
                             operation.setAccount(acc);
                             operation.setDescription("Ouverture du compte " + number);
-                            operation.setType(OperationType.ouverture);
+                            operation.setType(OperationType.OUVERTURE);
                             operation.setDateOperation(new Date(new java.util.Date().getTime()));
                             operation.setUser(null);
                             commonService.saveOperation(operation);

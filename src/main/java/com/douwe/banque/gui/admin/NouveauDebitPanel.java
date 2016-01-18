@@ -19,7 +19,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +58,7 @@ public class NouveauDebitPanel extends JPanel {
         builder.append(btnEnregistrer = new JButton("Enrégistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
                     String account = accountText.getText();
@@ -94,7 +94,7 @@ public class NouveauDebitPanel extends JPanel {
                         o.setAccount(acc);
                         o.setDateOperation(new Date(new java.util.Date().getTime()));
                         o.setDescription("Debit de " + amount + " du compte " + account);
-                        o.setType(OperationType.debit);
+                        o.setType(OperationType.DEBIT);
                         User u = adminService.findUserById(UserInfo.getUserId());
                         o.setUser(u);
                         commonService.saveOperation(o);

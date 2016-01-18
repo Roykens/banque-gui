@@ -129,8 +129,7 @@ public class ComptePanel extends JPanel {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            String accountNumber = (String) tableModel.getValueAt(selected, 1);
-                            //conn.setAutoCommit(false);
+                            String accountNumber = (String) tableModel.getValueAt(selected, 1);                            
                             Account acc = adminService.findAccountByNumber(accountNumber);
                             User user = adminService.getUserByAccount(acc.getId());
                             adminService.deleteAccount(acc.getId());
@@ -138,7 +137,7 @@ public class ComptePanel extends JPanel {
                             ope.setDateOperation(new Date(new java.util.Date().getTime()));
                             ope.setAccount(acc);
                             ope.setDescription("Cloture du compte " + accountNumber);
-                            ope.setType(OperationType.cloture);
+                            ope.setType(OperationType.CLOTURE);
                             ope.setUser(user);
                             commonService.saveOperation(ope);
                             tableModel.removeRow(selected);
@@ -167,8 +166,8 @@ public class ComptePanel extends JPanel {
             filtrePanel.add(type = new JComboBox<AccountType>());
             type.setPreferredSize(new Dimension(100, 25));
             type.addItem(null);
-            type.addItem(AccountType.deposit);
-            type.addItem(AccountType.saving);
+            type.addItem(AccountType.DEPOSIT);
+            type.addItem(AccountType.SAVING);
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);

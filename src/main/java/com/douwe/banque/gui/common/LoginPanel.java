@@ -74,15 +74,15 @@ public class LoginPanel extends JPanel {
                         UserInfo.setRole(user.getRole());
                         UserInfo.setUserId((int) user.getId());
                         UserInfo.setLogged(true);
-                        if (UserInfo.getRole().equals(RoleType.customer)) {
-                            Customer customer = commonService.findCustomerByLogin(username);
+                        if (UserInfo.getRole().equals(RoleType.CUSTOMER)) {
+                            Customer customer = commonService.findCustomerByLogin(username);                            
                             UserInfo.setCustomerId(customer.getId());
                         }
                         Operation operation = new Operation();
                         operation.setAccount(null);
                         operation.setDateOperation(new Date(new java.util.Date().getTime()));
                         operation.setDescription(username);
-                        operation.setType(OperationType.connexion);
+                        operation.setType(OperationType.CONNEXION);
                         operation.setUser(user);
                         commonService.saveOperation(operation);
                         success();
@@ -91,8 +91,7 @@ public class LoginPanel extends JPanel {
                         JOptionPane.showMessageDialog(null, "Login ou mot de passe incorrect");
                         passwdText.setText("");
                     }
-
-                    //  conn.close();
+                   
                 } catch (ServiceException ex) {
                     Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -64,7 +64,7 @@ public class IBanqueCommonServiceTest {
         User expResult = new User();
         expResult.setLogin("admin");
         expResult.setPassword("admin");
-        expResult.setRole(RoleType.admin);
+        expResult.setRole(RoleType.ADMIN);
         expResult.setStatus(0);
         expResult.setId(2);
         User result = service.login(username, passwd);

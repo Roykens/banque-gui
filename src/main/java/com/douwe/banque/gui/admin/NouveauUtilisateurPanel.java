@@ -61,8 +61,8 @@ public class NouveauUtilisateurPanel extends JPanel {
         builder.append("Retapez mot de passe", passwdText2 = new JPasswordField());
         builder.append("Role", role = new JComboBox<RoleType>());
         role.addItem(null);
-        role.addItem(RoleType.admin);
-        role.addItem(RoleType.employee);
+        role.addItem(RoleType.ADMIN);
+        role.addItem(RoleType.EMPLOYEE);
         builder.append(enregistrer = new JButton("Enregistrer"));
         add(BorderLayout.CENTER, builder.getPanel());
         enregistrer.addActionListener(new ActionListener() {
@@ -98,7 +98,7 @@ public class NouveauUtilisateurPanel extends JPanel {
                     Operation o = new Operation();
                     o.setAccount(null);
                     o.setDateOperation(new Date(new java.util.Date().getTime()));
-                    o.setType(OperationType.debit);
+                    o.setType(OperationType.DEBIT);
                     o.setUser(user);
                     o.setDescription("Ajout de l'utilisateur " + login.toLowerCase());
                     commonService.saveOperation(o);

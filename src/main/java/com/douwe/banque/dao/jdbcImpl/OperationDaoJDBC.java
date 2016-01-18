@@ -32,16 +32,14 @@ public class OperationDaoJDBC implements IOperationDao {
             PreparedStatement psmt = conn.prepareStatement("insert into operations(dateOperation, description, account_id, user_id, operationType) values(?,?,?,?,?)");
             psmt.setDate(1, new java.sql.Date(operation.getDateOperation().getTime()));
             psmt.setString(2, operation.getDescription());
-            if(operation.getAccount() != null){
+            if (operation.getAccount() != null) {
                 psmt.setLong(3, operation.getAccount().getId());
-            }
-            else{
+            } else {
                 psmt.setLong(3, 1L);
             }
             if (operation.getUser() != null) {
                 psmt.setLong(4, operation.getUser().getId());
-            }
-            else{
+            } else {
                 psmt.setLong(4, 1L);
             }
             psmt.setInt(5, operation.getType().ordinal());
@@ -96,35 +94,10 @@ public class OperationDaoJDBC implements IOperationDao {
     @Override
     public Operation findById(Integer id) throws DataAccessException {
         try {
-            Operation result = null;
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select o.*, u.id as uid, u.username, u.passwd, u.role, u.status, a.id as aid, a.accountNumber, a.balance, a.dateCreation, a.type, a.status as astatus from operations o, users u, account a where o.id = ? and o.user_id = u.id and o.account_id = a.id");
             psmt.setInt(1, id);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                result = new Operation();
-                result.setId(rs.getInt("id"));
-                result.setDateOperation(rs.getDate("dateOperation"));
-                result.setDescription(rs.getString("description"));
-                result.setType(OperationType.values()[rs.getInt("operationType")]);
-                User user = new User();
-                user.setId(rs.getInt("uid"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                result.setUser(user);
-                Account account = new Account();
-                account.setAccountNumber(rs.getString("accountNumber"));
-                account.setBalance(rs.getDouble("balance"));
-                account.setDateDeCreation(rs.getDate("dateOperation"));
-                account.setType(AccountType.values()[rs.getInt("type")]);
-                account.setStatus(rs.getInt("astatus"));
-                result.setAccount(account);
-            }
-            rs.close();
-            psmt.close();
-            return result;
+            return executeQuery(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -134,30 +107,36 @@ public class OperationDaoJDBC implements IOperationDao {
     @Override
     public List<Operation> findAll() throws DataAccessException {
         try {
-            List<Operation> result = new ArrayList<>();
+
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select o.*, u.id as uid, u.username, u.passwd, u.role, u.status, a.id as aid, a.accountNumber, a.balance, a.dateCreation, a.type, a.status as astatus from operations o, users u, account a where o.user_id = u.id and o.account_id = a.id");
+            return executeQueryResult(psmt);
+        } catch (SQLException ex) {
+            Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
+
+    @Override
+    public List<Operation> findForCustomer(Customer cust) throws DataAccessException {
+        try {
+
+            Connection conn = JDBCConnectionFactory.getConnection();
+            PreparedStatement psmt = conn.prepareStatement("select o.*, u.id as uid, u.username, u.passwd, u.role, u.status, a.id as aid, a.accountNumber, a.balance, a.dateCreation, a.type, a.status as astatus from operations o, users u, account a where o.user_id = u.id and o.account_id = a.id and a.customer_id = ?");
+            psmt.setInt(1, cust.getId());
+            return executeQueryResult(psmt);
+        } catch (SQLException ex) {
+            Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
+
+    private List<Operation> executeQueryResult(PreparedStatement psmt) throws DataAccessException {
+        try {
+            List<Operation> result = new ArrayList<>();
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
-                Operation op = new Operation();
-                op.setId(rs.getInt("id"));
-                op.setDateOperation(rs.getDate("dateOperation"));
-                op.setDescription(rs.getString("description"));
-                op.setType(OperationType.values()[rs.getInt("operationType")]);
-                User user = new User();
-                user.setId(rs.getInt("uid"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                op.setUser(user);
-                Account account = new Account();
-                account.setAccountNumber(rs.getString("accountNumber"));
-                account.setBalance(rs.getDouble("balance"));
-                account.setDateDeCreation(rs.getDate("dateOperation"));
-                account.setType(AccountType.values()[rs.getInt("type")]);
-                account.setStatus(rs.getInt("astatus"));
-                op.setAccount(account);
+                Operation op = stockerOperation(rs);
                 result.add(op);
             }
             rs.close();
@@ -169,39 +148,44 @@ public class OperationDaoJDBC implements IOperationDao {
         }
     }
 
-    @Override
-    public List<Operation> findForCustomer(Customer cust) throws DataAccessException {
+    private Operation executeQuery(PreparedStatement psmt) throws DataAccessException {
         try {
-            List<Operation> result = new ArrayList<>();
-            Connection conn = JDBCConnectionFactory.getConnection();
-            PreparedStatement psmt = conn.prepareStatement("select o.*, u.id as uid, u.username, u.passwd, u.role, u.status, a.id as aid, a.accountNumber, a.balance, a.dateCreation, a.type, a.status as astatus from operations o, users u, account a where o.user_id = u.id and o.account_id = a.id and a.customer_id = ?");
-            psmt.setInt(1, cust.getId());
+            Operation op = null;
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
-                Operation op = new Operation();
-                op.setId(rs.getInt("id"));
-                op.setDateOperation(rs.getDate("dateOperation"));
-                op.setDescription(rs.getString("description"));
-                op.setType(OperationType.values()[rs.getInt("operationType")]);
-                User user = new User();
-                user.setId(rs.getInt("uid"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                op.setUser(user);
-                Account account = new Account();
-                account.setAccountNumber(rs.getString("accountNumber"));
-                account.setBalance(rs.getDouble("balance"));
-                account.setDateDeCreation(rs.getDate("dateOperation"));
-                account.setType(AccountType.values()[rs.getInt("type")]);
-                account.setStatus(rs.getInt("astatus"));
-                op.setAccount(account);
-                result.add(op);
+                op = stockerOperation(rs);
             }
             rs.close();
             psmt.close();
-            return result;
+            return op;
+        } catch (SQLException ex) {
+            Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
+
+    private Operation stockerOperation(ResultSet rs) throws DataAccessException {
+        try {
+            Operation op = new Operation();
+            op.setId(rs.getInt("id"));
+            op.setDateOperation(rs.getDate("dateOperation"));
+            op.setDescription(rs.getString("description"));
+            op.setType(OperationType.values()[rs.getInt("operationType")]);
+            User user = new User();
+            user.setId(rs.getInt("uid"));
+            user.setLogin(rs.getString("username"));
+            user.setPassword(rs.getString("passwd"));
+            user.setRole(RoleType.values()[rs.getInt("role")]);
+            user.setStatus(rs.getInt("status"));
+            op.setUser(user);
+            Account account = new Account();
+            account.setAccountNumber(rs.getString("accountNumber"));
+            account.setBalance(rs.getDouble("balance"));
+            account.setDateDeCreation(rs.getDate("dateOperation"));
+            account.setType(AccountType.values()[rs.getInt("type")]);
+            account.setStatus(rs.getInt("astatus"));
+            op.setAccount(account);
+            return op;
         } catch (SQLException ex) {
             Logger.getLogger(OperationDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);

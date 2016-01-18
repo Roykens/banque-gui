@@ -16,11 +16,11 @@ import javax.swing.JFrame;
  * @author Shelby
  */
 public class ModelDeBaseFrame extends JFrame{
-//    
-//    protected transient Connection conn;
-//    
-//    public ModelDeBaseFrame() throws SQLException{
-//        super();
-//        this.conn=ConnectToDB.getConnectionToSQLite();
-//    }
+    
+    protected transient Connection conn;
+    
+    public ModelDeBaseFrame() throws SQLException{
+        super();
+        this.conn=ConnectToDB.getConnectionToSQLite();
+    }
 }

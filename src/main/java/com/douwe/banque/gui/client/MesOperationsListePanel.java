@@ -66,10 +66,10 @@ public class MesOperationsListePanel extends JPanel {
             comptes = new JComboBox<String>();
             operations = new JComboBox<String>();
             operations.addItem("");
-            operations.addItem(OperationType.credit.toString());
-            operations.addItem(OperationType.debit.toString());
-            operations.addItem(OperationType.transfer.toString());
-            operations.addItem(OperationType.cloture.toString());
+            operations.addItem(OperationType.CREDIT.toString());
+            operations.addItem(OperationType.DEBIT.toString());
+            operations.addItem(OperationType.TRANSFER.toString());
+            operations.addItem(OperationType.CLOTURE.toString());
             startDate = new JXDatePicker();
             endDate = new JXDatePicker();
             filtrePanel.add(new JLabel("Compte"));

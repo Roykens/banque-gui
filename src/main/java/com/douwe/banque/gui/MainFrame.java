@@ -26,7 +26,7 @@ public class MainFrame extends JFrame{
 
     private transient HeaderPanel headerPanel;
     private transient JPanel contentPanel;
-    private transient final MessageHelper helper;
+    private final transient  MessageHelper helper;
     private transient IBanqueCommonService commonService ;
     private transient IBanqueAdminService adminService;
 
@@ -61,7 +61,7 @@ public class MainFrame extends JFrame{
                     o.setAccount(null);
                     o.setDateOperation(new Date(new java.util.Date().getTime()));
                     o.setDescription(helper.getProperty("mainFrame.deconnecteUtilisateur") + UserInfo.getUsername());
-                    o.setType(OperationType.deconnexion);
+                    o.setType(OperationType.DECONNEXION);
                     o.setUser(u);
                     commonService.saveOperation(o);
                 } catch (ServiceException ex) {

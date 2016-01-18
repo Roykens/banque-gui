@@ -2,22 +2,19 @@ package com.douwe.banque.service;
 
 import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.data.AccountType;
-import com.douwe.banque.data.OperationType;
 import com.douwe.banque.data.RoleType;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.model.Customer;
-import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
 import com.douwe.banque.model.projection.AccountCustomer;
 import com.douwe.banque.model.projection.AccountOperation;
-import java.util.Date;
 import java.util.List;
 
 /**
  *
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
-public interface IBanqueAdminService {
+public interface IBanqueAdminService  {
 
     public Customer findCustomerById(Integer id) throws ServiceException;
 

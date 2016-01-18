@@ -137,7 +137,7 @@ public class UtilisateurPanel extends JPanel {
                             o.setAccount(null);
                             o.setDateOperation(new Date(new java.util.Date().getTime()));
                             o.setDescription("Suppression de l'utilisateur " + tableModel.getValueAt(selected, 1));
-                            o.setType(OperationType.suppression);
+                            o.setType(OperationType.SUPPRESSION);
                             o.setUser(u);
                             commonService.saveOperation(o);
                             tableModel.removeRow(selected);
@@ -163,9 +163,9 @@ public class UtilisateurPanel extends JPanel {
             filtrePanel.add(role = new JComboBox<RoleType>());
             role.setPreferredSize(new Dimension(100, 25));
             role.addItem(null);
-            role.addItem(RoleType.customer);
-            role.addItem(RoleType.employee);
-            role.addItem(RoleType.admin);
+            role.addItem(RoleType.CUSTOMER);
+            role.addItem(RoleType.EMPLOYEE);
+            role.addItem(RoleType.ADMIN);
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);

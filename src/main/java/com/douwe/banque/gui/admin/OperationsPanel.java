@@ -1,7 +1,6 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.OperationType;
-import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
 

@@ -114,31 +114,11 @@ public class AccountDaoJDBC implements IAccountDao {
 
     @Override
     public Account findById(Integer id) throws DataAccessException {
-        try {
-            Account result = null;
+        try {            
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select a.id as aid, a.accountNumber, a.balance, a.status as astatus, a.type as atype, a.dateCreation, c.* from account a, customer c where a.customer_id = c.id and a.id = ?");
             psmt.setInt(1, id);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                result = new Account();
-                result.setId(rs.getInt("aid"));
-                result.setAccountNumber(rs.getString("accountNumber"));
-                result.setBalance(rs.getDouble("balance"));
-                result.setStatus(rs.getInt("astatus"));
-                result.setType(AccountType.values()[rs.getInt("atype")]);
-                result.setDateDeCreation(rs.getDate("dateCreation"));
-                Customer customer = new Customer();
-                customer.setId(rs.getInt("id"));
-                customer.setName(rs.getString("name"));
-                customer.setPhoneNumber(rs.getString("phoneNumber"));
-                customer.setEmailAddress(rs.getString("emailAddress"));
-                customer.setStatus(rs.getInt("status"));
-                result.setCustomer(customer);
-            }
-            rs.close();
-            psmt.close();
-            return result;
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -147,31 +127,11 @@ public class AccountDaoJDBC implements IAccountDao {
 
     @Override
     public Account findByAccountNumber(String accountNumber) throws DataAccessException {
-        try {
-            Account result = null;
+        try {            
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select a.id as aid, a.accountNumber, a.balance, a.status as astatus, a.type as atype, a.dateCreation, c.* from account a, customer c where a.customer_id = c.id and accountNumber = ?");
             psmt.setString(1, accountNumber);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                result = new Account();
-                result.setId(rs.getInt("aid"));
-                result.setAccountNumber(rs.getString("accountNumber"));
-                result.setBalance(rs.getDouble("balance"));
-                result.setStatus(rs.getInt("astatus"));
-                result.setType(AccountType.values()[rs.getInt("atype")]);
-                result.setDateDeCreation(rs.getDate("dateCreation"));
-                Customer customer = new Customer();
-                customer.setId(rs.getInt("id"));
-                customer.setName(rs.getString("name"));
-                customer.setPhoneNumber(rs.getString("phoneNumber"));
-                customer.setEmailAddress(rs.getString("emailAddress"));
-                customer.setStatus(rs.getInt("status"));
-                result.setCustomer(customer);
-            }
-            rs.close();
-            psmt.close();
-            return result;
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -181,12 +141,12 @@ public class AccountDaoJDBC implements IAccountDao {
     @Override
     public List<Account> findByCustomer(Customer cust) throws DataAccessException {
         List<Account> result = new ArrayList<>();
-        try {            
+        try {
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select a.id as aid, a.accountNumber, a.balance, a.status as astatus, a.type as atype, a.dateCreation, c.* from account a, customer c where a.customer_id = c.id and c.id = ?");
             psmt.setInt(1, cust.getId());
-            ResultSet rs  = psmt.executeQuery();
-            while(rs.next()){
+            ResultSet rs = psmt.executeQuery();
+            while (rs.next()) {
                 Account account = new Account();
                 account.setId(rs.getInt("aid"));
                 account.setAccountNumber(rs.getString("accountNumber"));
@@ -208,5 +168,34 @@ public class AccountDaoJDBC implements IAccountDao {
             throw new DataAccessException(ex);
         }
         return result;
+    }
+
+    private Account executeQueryResult(PreparedStatement psmt) throws DataAccessException {
+        try {
+            Account result = null;
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) { 
+                result = new Account();
+                result.setId(rs.getInt("aid"));
+                result.setAccountNumber(rs.getString("accountNumber"));
+                result.setBalance(rs.getDouble("balance"));
+                result.setStatus(rs.getInt("astatus"));
+                result.setType(AccountType.values()[rs.getInt("atype")]);
+                result.setDateDeCreation(rs.getDate("dateCreation"));
+                Customer customer = new Customer();
+                customer.setId(rs.getInt("id"));
+                customer.setName(rs.getString("name"));
+                customer.setPhoneNumber(rs.getString("phoneNumber"));
+                customer.setEmailAddress(rs.getString("emailAddress"));
+                customer.setStatus(rs.getInt("status"));
+                result.setCustomer(customer);
+            }
+            rs.close();
+            psmt.close();
+            return result;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
     }
 }

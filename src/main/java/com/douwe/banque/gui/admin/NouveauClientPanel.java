@@ -24,7 +24,7 @@ import javax.swing.JTextField;
  *
  * @author Vincent Douwe<douwevincent@yahoo.fr>
  */
-public class NouveauClientPanel extends JPanel{
+public class NouveauClientPanel extends JPanel {
 
     private JTextField nameText;
     private JTextField emailText;
@@ -33,7 +33,7 @@ public class NouveauClientPanel extends JPanel{
     private int id = -1;
     private transient MainMenuPanel parent;
     private transient Customer customer;
-    private transient  IBanqueAdminService adminService;
+    private transient IBanqueAdminService adminService;
 
     public NouveauClientPanel(MainMenuPanel parentFrame, int id) {
         this(parentFrame);
@@ -53,9 +53,8 @@ public class NouveauClientPanel extends JPanel{
         }
     }
 
-    public NouveauClientPanel(MainMenuPanel parentFrame){
-       // super();
-         adminService = new BanqueAdminServiceImpl();
+    public NouveauClientPanel(MainMenuPanel parentFrame) {
+        adminService = new BanqueAdminServiceImpl();
         this.parent = parentFrame;
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -94,43 +93,6 @@ public class NouveauClientPanel extends JPanel{
                         customer.setPhoneNumber(phone);
                         customer.setName(name);
                         Customer cust = adminService.saveOrUpdateCustomer(customer);
-//                        conn.setAutoCommit(false);
-//                        PreparedStatement pst = conn.prepareStatement("insert into customer(name,emailAddress, phoneNumber, user_id) values (?,?,?,?)");
-//                        PreparedStatement st = conn.prepareStatement("insert into users(username, passwd, role) values (?,?,?)");
-//                        String val = name.replaceAll(" ", "").toLowerCase();
-//                        st.setString(1, val);
-//                        st.setString(2, "admin");
-//                        st.setInt(3, RoleType.customer.ordinal());
-//                        st.executeUpdate();
-//                        ResultSet rrr = st.getGeneratedKeys();
-//                        if (rrr.next()) {
-//                            pst.setString(1, name);
-//                            pst.setString(2, email);
-//                            pst.setString(3, phone);
-//                            pst.setInt(4, rrr.getInt(1));
-//                            pst.executeUpdate();
-//                            PreparedStatement pst3 = conn.prepareStatement("insert into operations(operationType, dateOperation,description, account_id, user_id) values (?,?,?,?,?)");
-//                            pst3.setInt(1, OperationType.ajout.ordinal());
-//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-//                            pst3.setString(3, "Ajout du client " + name);
-//                            pst3.setInt(4, 1);
-//                            pst3.setInt(5, 1);
-//                            pst3.executeUpdate();
-//                            pst3.setInt(1, OperationType.ajout.ordinal());
-//                            pst3.setDate(2, new Date(new java.util.Date().getTime()));
-//                            pst3.setString(3, "Ajout de l'utilisateur " + val);
-//                            pst3.setInt(4, 1);
-//                            pst3.setInt(5, 1);
-//                            pst3.executeUpdate();
-//                            pst3.close();
-//                            conn.commit();
-//                        } else {
-//                            conn.rollback();
-//                        }
-//                        rrr.close();
-//                        st.close();
-//                        pst.close();
-//                        conn.close();
                         if (cust.getUser() != null) {
                             String val = cust.getUser().getLogin();
                             JOptionPane.showMessageDialog(null, "Un compte avec login " + val + " et mot de passe 'admin' a été créé");
@@ -157,29 +119,19 @@ public class NouveauClientPanel extends JPanel{
                             JOptionPane.showMessageDialog(null, "Le numéro de téléphone est obligatoire");
                             return;
                         }
-                        
+
                         customer.setName(name);
                         customer.setPhoneNumber(phone);
                         customer.setEmailAddress(email);
-                        adminService.saveOrUpdateCustomer(customer);
-//                        PreparedStatement pst = conn.prepareStatement("update customer set name =?, emailAddress=?, phoneNumber=? where id = ?");
-//                        pst.setString(1, name);
-//                        pst.setString(2, email);
-//                        pst.setString(3, phone);
-//                        pst.setInt(4, id);
-//                        pst.executeUpdate();
-//                        pst.close();
-//                        conn.close();
+                        adminService.saveOrUpdateCustomer(customer);;
                         parent.setContenu(new ClientPanel(parent));
-//                    } catch (SQLException ex) {
-//                        JOptionPane.showMessageDialog(null, "Impossible de mettre a jour votre compte");
-//                        Logger.getLogger(NouveauClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ServiceException ex) {
                         JOptionPane.showMessageDialog(null, "Impossible de mettre a jour votre compte");
                         Logger.getLogger(NouveauClientPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
-        });
+        }
+        );
     }
 }

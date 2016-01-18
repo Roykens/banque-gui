@@ -19,7 +19,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,7 +89,7 @@ public class NouveauDepotPanel extends JPanel {
                         o.setAccount(acc);
                         o.setDateOperation(new Date(new java.util.Date().getTime()));
                         o.setDescription("Credit du compte " + account + " de " + amount);
-                        o.setType(OperationType.credit);
+                        o.setType(OperationType.CREDIT);
                         User u = adminService.findUserById(UserInfo.getUserId());
                         o.setUser(u);
                         commonService.saveOperation(o);

@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class AccountOperation {
     
-    private Operation operation;
+    private final Operation operation;
     
     private String accountNumber;
     

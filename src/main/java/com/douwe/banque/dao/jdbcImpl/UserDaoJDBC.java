@@ -80,22 +80,10 @@ public class UserDaoJDBC implements IUserDao {
     @Override
     public User findById(Integer id) throws DataAccessException {
         try {
-            User user = null;
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select * from users where id = ?");
             psmt.setInt(1, id);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-            }
-            rs.close();
-            psmt.close();
-            return user;
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -105,22 +93,9 @@ public class UserDaoJDBC implements IUserDao {
     @Override
     public List<User> findAll() throws DataAccessException {
         try {
-            List<User> resultat = new ArrayList<>();
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select * from users");
-            ResultSet rs = psmt.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                resultat.add(user);
-            }
-            rs.close();
-            psmt.close();
-            return resultat;
+            return executeQuery(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -129,49 +104,24 @@ public class UserDaoJDBC implements IUserDao {
 
     @Override
     public User findByLogin(String login) throws DataAccessException {
-        User user = null;
         try {
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select * from users where username like ?");
-            psmt.setString(1, login);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-            }
-            rs.close();
-            psmt.close();
+            psmt.setString(1, login);                  
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
-            throw  new DataAccessException(ex);
+            throw new DataAccessException(ex);
         }
-        return user;
     }
 
     @Override
     public List<User> findByStatus(int status) throws DataAccessException {
         try {
-            List<User> resultat = new ArrayList<>();
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select * from users where status = ?");
             psmt.setInt(1, status);
-            ResultSet rs = psmt.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                resultat.add(user);
-            }
-            rs.close();
-            psmt.close();
-            return resultat;
+            return executeQuery(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -180,26 +130,64 @@ public class UserDaoJDBC implements IUserDao {
 
     @Override
     public User findUserByAccount(Account account) throws DataAccessException {
-        User user = null;
         try {
-            
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select u.id , u.username, u.passwd, u.role, u.status from users u where u.id=(select customer.user_id from customer  where customer.id= (select account.customer_id from account where account.id= ?))");
             psmt.setInt(1, account.getId());
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-            }
-            rs.close();
-            psmt.close();            
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(UserDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
         }
-        return user;
     }
+
+    private User executeQueryResult(PreparedStatement psmt) throws DataAccessException {
+        User user = null;
+        try {
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) {
+                user = SaveUser(rs);
+            }
+            rs.close();
+            psmt.close();
+            return user;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
+
+    private User SaveUser(ResultSet rs) throws DataAccessException {
+        try {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setLogin(rs.getString("username"));
+            user.setPassword(rs.getString("passwd"));
+            user.setRole(RoleType.values()[rs.getInt("role")]);
+            user.setStatus(rs.getInt("status"));
+            return user;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
+
+    private List<User> executeQuery(PreparedStatement psmt) throws DataAccessException {
+        List<User> resultat = new ArrayList<>();
+        try {
+            ResultSet rs = psmt.executeQuery();
+            while (rs.next()) {
+                User user = SaveUser(rs);
+                resultat.add(user);
+            }
+            rs.close();
+            psmt.close();
+            return resultat;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+
+    }
+
 }

@@ -65,7 +65,7 @@ public class BanqueClientServiceImpl implements IBanqueClientService{
             Operation op = new Operation();
             op.setAccount(accDepart);
             op.setDateOperation(new Date());
-            op.setType(OperationType.transfer);
+            op.setType(OperationType.TRANSFER);
             op.setUser(user);
             op.setDescription(String.format("Transfert de %.2f du compte %s vers le compte %s", montant, depart, destination));
             daoFactory.getOperationDao().save(op);            

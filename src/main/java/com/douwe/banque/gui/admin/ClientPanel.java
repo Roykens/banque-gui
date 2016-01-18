@@ -15,7 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -76,7 +75,7 @@ public class ClientPanel extends JPanel {
                     selectCustomerbyStatus();
                 }
 
-                private void selectCustomerbyStatus() throws HeadlessException {
+                private void selectCustomerbyStatus() {
                     String name = nameText.getText();
                     try {
                         List<Customer> customers = adminService.findCustomerByName(name);
@@ -122,7 +121,7 @@ public class ClientPanel extends JPanel {
                             o.setAccount(null);
                             o.setDateOperation(new Date(new java.util.Date().getTime()));
                             o.setDescription("Suppression du client " + tableModel.getValueAt(selected, 1));
-                            o.setType(OperationType.suppression);
+                            o.setType(OperationType.SUPPRESSION);
                             o.setUser(null);
                             commonService.saveOperation(o);
                         } catch (ServiceException ex) {

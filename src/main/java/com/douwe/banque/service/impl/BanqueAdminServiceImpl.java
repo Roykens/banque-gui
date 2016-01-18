@@ -151,7 +151,7 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
             Operation op = new Operation();
             op.setAccount(accDepart);
             op.setDateOperation(new Date());
-            op.setType(OperationType.credit);
+            op.setType(OperationType.CREDIT);
             op.setUser(user);
             op.setDescription(String.format("Credit du compte %s de %.2f", account, balance));
             daoFactory.getOperationDao().save(op);            
@@ -177,7 +177,7 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
             Operation op = new Operation();
             op.setAccount(accDepart);
             op.setDateOperation(new Date());
-            op.setType(OperationType.debit);
+            op.setType(OperationType.DEBIT);
             op.setUser(user);
             op.setDescription(String.format("Debit du compte %s de %.2f", account, balance));
             daoFactory.getOperationDao().save(op);            
@@ -195,7 +195,7 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
                 User user = new User();
                 user.setLogin(nn);
                 user.setPassword("admin");
-                user.setRole(RoleType.customer);
+                user.setRole(RoleType.CUSTOMER);
                 user.setStatus(0);
                 user = daoFactory.getUserDao().save(user);
                 customer.setUser(user);
@@ -301,8 +301,8 @@ public class BanqueAdminServiceImpl implements IBanqueAdminService{
     }
     
     @Override
-    public Customer getSingleCustomerByName(String customer) throws ServiceException {
-        try {
+    public Customer getSingleCustomerByName(String customer) throws ServiceException {        
+        try {            
             Customer cust = daoFactory.getCustomerDao().findByName(customer);
             if ((cust != null) && (cust.getStatus() != 0))
                     return null;
