@@ -169,6 +169,35 @@ public class AccountDaoJDBC implements IAccountDao {
         }
         return result;
     }
+    
+    private Account executeQueryResult(PreparedStatement psmt) throws DataAccessException {
+        try {
+            Account result = null;
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) { 
+                result = new Account();
+                result.setId(rs.getInt("aid"));
+                result.setAccountNumber(rs.getString("accountNumber"));
+                result.setBalance(rs.getDouble("balance"));
+                result.setStatus(rs.getInt("astatus"));
+                result.setType(AccountType.values()[rs.getInt("atype")]);
+                result.setDateDeCreation(rs.getDate("dateCreation"));
+                Customer customer = new Customer();
+                customer.setId(rs.getInt("id"));
+                customer.setName(rs.getString("name"));
+                customer.setPhoneNumber(rs.getString("phoneNumber"));
+                customer.setEmailAddress(rs.getString("emailAddress"));
+                customer.setStatus(rs.getInt("status"));
+                result.setCustomer(customer);
+            }
+            rs.close();
+            psmt.close();
+            return result;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }
+    }
 
     
 }
