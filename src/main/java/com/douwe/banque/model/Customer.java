@@ -1,5 +1,7 @@
 package com.douwe.banque.model;
 
+import java.util.Objects;
+
 /**
  * Cette classe représente un client de la banque dans le système. Il est
  * caractérisé par son nom ,son adresse mail et est également representer comme
@@ -86,5 +88,37 @@ public class Customer {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.name);
+        hash = 97 * hash + Objects.hashCode(this.emailAddress);
+        hash = 97 * hash + Objects.hashCode(this.phoneNumber);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Customer other = (Customer) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.emailAddress, other.emailAddress)) {
+            return false;
+        }
+        if (!Objects.equals(this.phoneNumber, other.phoneNumber)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 
 }
