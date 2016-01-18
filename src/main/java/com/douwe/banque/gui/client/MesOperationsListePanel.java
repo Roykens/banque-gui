@@ -40,14 +40,13 @@ public class MesOperationsListePanel extends JPanel {
 
     private JComboBox<String> comptes;
     private JComboBox<String> operations;
-    private JXDatePicker startDate;
-    private JXDatePicker endDate;
+    private transient JXDatePicker startDate;
+    private transient JXDatePicker endDate;
     private JTable operationTable;
     private DefaultTableModel tableModel;
     private JButton filtreBtn;
-    private final String accountQuery = "select accountNumber from account where customer_id=?";
-    private IBanqueClientService clientService;
-    private IBanqueCommonService commonService;
+    private transient IBanqueClientService clientService;
+    private transient IBanqueCommonService commonService;
 
     public MesOperationsListePanel() {
         super();

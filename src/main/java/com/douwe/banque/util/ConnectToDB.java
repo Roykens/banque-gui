@@ -14,9 +14,9 @@ import java.sql.SQLException;
  * @author Shelby
  */
 public class ConnectToDB {
-    private final static String schemaSqlite="jdbc:sqlite:banque.db";
-    
-    public static Connection getConnectionToSQLite() throws SQLException{
-        return DriverManager.getConnection(schemaSqlite);
-    }
+//    private final static String schemaSqlite="jdbc:sqlite:banque.db";
+//    
+//    public static Connection getConnectionToSQLite() throws SQLException{
+//        return DriverManager.getConnection(schemaSqlite);
+//    }
 }

@@ -44,11 +44,10 @@ public class ClientPanel extends JPanel {
     private JTable clientTable;
     private DefaultTableModel tableModel;
     private JTextField nameText;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService;
-    private MessageHelper helper;
-
-    private IBanqueCommonService commonService;
+    private transient  MainMenuPanel parent;
+    private transient  IBanqueAdminService adminService;
+    private transient  MessageHelper helper;
+    private  transient IBanqueCommonService commonService;
 
     public ClientPanel(MainMenuPanel parentFrame) {        
         try {

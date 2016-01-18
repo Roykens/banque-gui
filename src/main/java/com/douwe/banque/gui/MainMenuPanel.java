@@ -29,18 +29,18 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
  */
 public class MainMenuPanel extends JPanel {
 
-    private JXHyperlink mesComptes;
-    private JXHyperlink mesOperations;
-    private JXHyperlink tranfer;
-    private JXHyperlink utilisateurs;
-    private JXHyperlink comptes;
-    private JXHyperlink customer;
-    private JXHyperlink operations;
-    private JXHyperlink profil;
-    private JXHyperlink debit;
-    private JXHyperlink credit;
-    private JPanel container;
-     private final MessageHelper helper = new MessageHelper();
+    private transient JXHyperlink mesComptes;
+    private transient  JXHyperlink mesOperations;
+    private transient  JXHyperlink tranfer;
+    private transient  JXHyperlink utilisateurs;
+    private transient  JXHyperlink comptes;
+    private transient  JXHyperlink customer;
+    private transient  JXHyperlink operations;
+    private transient  JXHyperlink profil;
+    private transient  JXHyperlink debit;
+    private transient  JXHyperlink credit;
+    private transient  JPanel container;
+     private transient  final MessageHelper helper = new MessageHelper();
   
 
     public MainMenuPanel() {

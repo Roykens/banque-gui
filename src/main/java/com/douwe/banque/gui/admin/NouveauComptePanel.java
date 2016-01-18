@@ -41,9 +41,9 @@ public class NouveauComptePanel extends JPanel {
     private JTextField customerText;
     private JButton btnEnregistrer;
     private int id = -1;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService;
-    private IBanqueCommonService commonService;
+    private transient MainMenuPanel parent;
+    private transient IBanqueAdminService adminService;
+    private transient IBanqueCommonService commonService;
 
     public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) {
         this(parentFrame);

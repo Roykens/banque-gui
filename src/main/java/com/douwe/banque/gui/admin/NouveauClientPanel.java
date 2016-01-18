@@ -31,9 +31,9 @@ public class NouveauClientPanel extends JPanel{
     private JTextField phoneText;
     private JButton btnEnregistrer;
     private int id = -1;
-    private MainMenuPanel parent;
-    private Customer customer;
-    private IBanqueAdminService adminService;
+    private transient MainMenuPanel parent;
+    private transient Customer customer;
+    private transient  IBanqueAdminService adminService;
 
     public NouveauClientPanel(MainMenuPanel parentFrame, int id) {
         this(parentFrame);

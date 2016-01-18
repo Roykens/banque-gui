@@ -24,11 +24,11 @@ import javax.swing.JPanel;
  */
 public class MainFrame extends JFrame{
 
-    private HeaderPanel headerPanel;
-    private JPanel contentPanel;
-    private final MessageHelper helper;
-    private IBanqueCommonService commonService ;
-    private IBanqueAdminService adminService;
+    private transient HeaderPanel headerPanel;
+    private transient JPanel contentPanel;
+    private transient final MessageHelper helper;
+    private transient IBanqueCommonService commonService ;
+    private transient IBanqueAdminService adminService;
 
     public MainFrame()  {
         super();

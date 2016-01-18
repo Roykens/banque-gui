@@ -15,10 +15,10 @@ import javax.swing.JPanel;
  */
 public class ModelDeBasePanel extends JPanel{
    
-    protected Connection conn;
-    
-    public ModelDeBasePanel() throws SQLException{
-        super();
-        this.conn=ConnectToDB.getConnectionToSQLite();
-    }
+//    protected transient Connection conn;
+//    
+//    public ModelDeBasePanel() throws SQLException{
+//        super();
+//        this.conn=ConnectToDB.getConnectionToSQLite();
+//    }
 }

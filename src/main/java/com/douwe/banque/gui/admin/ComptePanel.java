@@ -49,10 +49,10 @@ public class ComptePanel extends JPanel {
     private JTextField nameText;
     private JTextField numberText;
     private JComboBox<AccountType> type;
-    private MainMenuPanel parent;
-    private IBanqueAdminService adminService;
-    private IBanqueCommonService commonService;
-    private MessageHelper helper;
+    private transient MainMenuPanel parent;
+    private transient IBanqueAdminService adminService;
+    private transient MessageHelper helper;
+    private transient IBanqueCommonService commonService;
 
     public ComptePanel(MainMenuPanel parentFrame) {
         super();

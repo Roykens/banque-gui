@@ -35,7 +35,7 @@ public class LoginPanel extends JPanel {
     private JTextField loginText;
     private JPasswordField passwdText;
     private JButton btnLogin;
-    private IBanqueCommonService commonService;
+    private transient IBanqueCommonService commonService;
 
     public LoginPanel() {
         super();
