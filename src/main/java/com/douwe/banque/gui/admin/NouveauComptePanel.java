@@ -71,6 +71,8 @@ public class NouveauComptePanel extends JPanel {
 
     public NouveauComptePanel(MainMenuPanel parentFrame) {
         super();
+        adminService = new BanqueAdminServiceImpl();
+        commonService = new BanqueServiceCommonImpl();
         this.parent = parentFrame;
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
