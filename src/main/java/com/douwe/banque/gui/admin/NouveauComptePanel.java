@@ -41,13 +41,13 @@ public class NouveauComptePanel extends JPanel {
     private JTextField customerText;
     private JButton btnEnregistrer;
     private int id = -1;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient IBanqueAdminService adminService;
     private transient IBanqueCommonService commonService;
 
-    public NouveauComptePanel(MainMenuPanel parentFrame, int account_id) {
-        this(parentFrame);
-        this.id = account_id;
+    public NouveauComptePanel(MainMenuPanel mainMenuPanelFrame, int accountID) {
+        this(mainMenuPanelFrame);
+        this.id = accountID;
         if (this.id > 0) {
             btnEnregistrer.setText("Modifier");
             try {
@@ -68,27 +68,31 @@ public class NouveauComptePanel extends JPanel {
         }
     }
 
-    public NouveauComptePanel(MainMenuPanel parentFrame) {
+    public NouveauComptePanel(MainMenuPanel mainMenuPanelFrame) {
         super();
         adminService = new BanqueAdminServiceImpl();
         commonService = new BanqueServiceCommonImpl();
-        this.parent = parentFrame;
+        this.mainMenuPanel = mainMenuPanelFrame;
         adminService = new BanqueAdminServiceImpl();
         commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lbl;
-        haut.add(lbl = new JLabel("AJOUT D'UN NOUVEAU COMPTE DANS MA BANQUE POPULAIRE"));
+        JLabel lbl = new JLabel("AJOUT D'UN NOUVEAU COMPTE DANS MA BANQUE POPULAIRE");
+        haut.add(lbl );
         lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         add(BorderLayout.BEFORE_FIRST_LINE, haut);
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-        builder.append("Numéro Compte", numberText = new JTextField());
-        builder.append("Solde initial", balanceText = new JTextField());
-        builder.append("Type de Compte", typeText = new JComboBox<AccountType>());
+         numberText = new JTextField();
+        builder.append("Numéro Compte",numberText);
+        balanceText = new JTextField();
+        builder.append("Solde initial", balanceText);
+        builder.append("Type de Compte", typeText);
         typeText.addItem(AccountType.DEPOSIT);
         typeText.addItem(AccountType.SAVING);
-        builder.append("Titulaire", customerText = new JTextField());
-        builder.append(btnEnregistrer = new JButton("Enrégistrer"));
+        customerText = new JTextField();
+        builder.append("Titulaire", customerText);
+        btnEnregistrer = new JButton("Enrégistrer");
+        builder.append(btnEnregistrer);
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
             @Override
@@ -109,7 +113,7 @@ public class NouveauComptePanel extends JPanel {
                         acc.setType(type);
                         acc.setAccountNumber(number);
                         adminService.saveOrUpdateAccount(acc);
-                        parent.setContenu(new ComptePanel(parent));
+                        mainMenuPanel.setContenu(new ComptePanel(mainMenuPanel));
                     } catch (ServiceException ex) {
                         Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -163,7 +167,7 @@ public class NouveauComptePanel extends JPanel {
                             JOptionPane.showMessageDialog(null, "Le client spécifié n'existe pas");
                             return;
                         }
-                        parent.setContenu(new ComptePanel(parent));
+                        mainMenuPanel.setContenu(new ComptePanel(mainMenuPanel));
                     } catch (ServiceException ex) {
                         Logger.getLogger(NouveauComptePanel.class.getName()).log(Level.SEVERE, null, ex);
                     }

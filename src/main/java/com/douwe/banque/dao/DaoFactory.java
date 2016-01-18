@@ -1,9 +1,9 @@
 package com.douwe.banque.dao;
 
-import com.douwe.banque.dao.jdbcImpl.AccountDaoJDBC;
-import com.douwe.banque.dao.jdbcImpl.CustomerDaoJDBC;
-import com.douwe.banque.dao.jdbcImpl.OperationDaoJDBC;
-import com.douwe.banque.dao.jdbcImpl.UserDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.AccountDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.CustomerDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.OperationDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.UserDaoJDBC;
 
 
 

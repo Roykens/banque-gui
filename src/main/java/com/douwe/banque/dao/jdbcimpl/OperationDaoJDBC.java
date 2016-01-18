@@ -1,4 +1,4 @@
-package com.douwe.banque.dao.jdbcImpl;
+package com.douwe.banque.dao.jdbcimpl;
 
 import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.IOperationDao;

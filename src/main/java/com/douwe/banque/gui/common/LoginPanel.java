@@ -43,14 +43,17 @@ public class LoginPanel extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(80, 350, 80, 300));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lbl;
-        haut.add(lbl = new JLabel("<html>Entrer login et mot de passe <br/> pour profiter des services de la banque populaire"));
+        JLabel lbl = new JLabel("<html>Entrer login et mot de passe <br/> pour profiter des services de la banque populaire");
+        haut.add(lbl );
         lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         add(BorderLayout.BEFORE_FIRST_LINE, haut);
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-        builder.append("Login", loginText = new JTextField());
-        builder.append("Mot de passe", passwdText = new JPasswordField());
-        builder.append(btnLogin = new JButton("Login"));
+        loginText = new JTextField();
+        builder.append("Login", loginText);
+        passwdText = new JPasswordField();
+        builder.append("Mot de passe", passwdText);
+        btnLogin = new JButton("Login");
+        builder.append(btnLogin);
         add(BorderLayout.CENTER, builder.getPanel());
         btnLogin.addActionListener(new ActionListener() {
             @Override

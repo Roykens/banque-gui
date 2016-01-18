@@ -31,12 +31,12 @@ public class NouveauClientPanel extends JPanel {
     private JTextField phoneText;
     private JButton btnEnregistrer;
     private int id = -1;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient Customer customer;
     private transient IBanqueAdminService adminService;
 
-    public NouveauClientPanel(MainMenuPanel parentFrame, int id) {
-        this(parentFrame);
+    public NouveauClientPanel(MainMenuPanel mainMenuPanelFrame, int id) {
+        this(mainMenuPanelFrame);
         this.id = id;
         if (id > 0) {
             try {
@@ -53,20 +53,24 @@ public class NouveauClientPanel extends JPanel {
         }
     }
 
-    public NouveauClientPanel(MainMenuPanel parentFrame) {
+    public NouveauClientPanel(MainMenuPanel mainMenuPanelFrame) {
         adminService = new BanqueAdminServiceImpl();
-        this.parent = parentFrame;
+        this.mainMenuPanel = mainMenuPanelFrame;
         setLayout(new BorderLayout(10, 10));
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lbl;
-        haut.add(lbl = new JLabel("AJOUT D'UN NOUVEAU CLIENT DANS MA BANQUE POPULAIRE"));
+        JLabel lbl = new JLabel("AJOUT D'UN NOUVEAU CLIENT DANS MA BANQUE POPULAIRE");
+        haut.add(lbl );
         lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         add(BorderLayout.BEFORE_FIRST_LINE, haut);
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-        builder.append("Nom", nameText = new JTextField());
-        builder.append("Adresse Email", emailText = new JTextField());
-        builder.append("Numéro de Téléphone", phoneText = new JTextField());
-        builder.append(btnEnregistrer = new JButton("Enrégistrer"));
+        nameText = new JTextField();
+        builder.append("Nom",nameText );
+        emailText = new JTextField();
+        builder.append("Adresse Email",emailText );
+        phoneText = new JTextField();
+        builder.append("Numéro de Téléphone",phoneText );
+        btnEnregistrer = new JButton("Enrégistrer");
+        builder.append(btnEnregistrer);
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
             @Override
@@ -97,7 +101,7 @@ public class NouveauClientPanel extends JPanel {
                             String val = cust.getUser().getLogin();
                             JOptionPane.showMessageDialog(null, "Un compte avec login " + val + " et mot de passe 'admin' a été créé");
                         }
-                        parent.setContenu(new ClientPanel(parent));
+                        mainMenuPanel.setContenu(new ClientPanel(mainMenuPanel));
                     } catch (ServiceException ex) {
                         JOptionPane.showMessageDialog(null, "Impossible de créer le compte");
                         Logger.getLogger(NouveauClientPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -124,7 +128,7 @@ public class NouveauClientPanel extends JPanel {
                         customer.setPhoneNumber(phone);
                         customer.setEmailAddress(email);
                         adminService.saveOrUpdateCustomer(customer);;
-                        parent.setContenu(new ClientPanel(parent));
+                        mainMenuPanel.setContenu(new ClientPanel(mainMenuPanel));
                     } catch (ServiceException ex) {
                         JOptionPane.showMessageDialog(null, "Impossible de mettre a jour votre compte");
                         Logger.getLogger(NouveauClientPanel.class.getName()).log(Level.SEVERE, null, ex);

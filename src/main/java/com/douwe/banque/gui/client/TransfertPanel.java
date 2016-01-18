@@ -34,27 +34,31 @@ public class TransfertPanel extends JPanel {
     private JTextField destination;
     private JTextField amount;
     private JButton transferBtn;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient IBanqueClientService clientService;
 
-    public TransfertPanel(MainMenuPanel parentFrame) {
+    public TransfertPanel(MainMenuPanel mainMenuPanelFrame) {
         super();
         try {
 
             clientService = new BanqueClientServiceImpl();
 
             setLayout(new BorderLayout());
-            this.parent = parentFrame;
+            this.mainMenuPanel = mainMenuPanelFrame;
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            Label lbl;
-            pan.add(lbl = new Label("NOUVEAU TRANSFERT DE COMPTE A COMPTE"));
+            Label lbl = new Label("NOUVEAU TRANSFERT DE COMPTE A COMPTE");
+            pan.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, pan);
             DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-            builder.append("Compte Départ", source = new JComboBox<String>());
-            builder.append("Compte Destination", destination = new JTextField());
-            builder.append("Montant", amount = new JTextField());
-            builder.append(transferBtn = new JButton("Transferer"));
+            source = new JComboBox<String>();
+            builder.append("Compte Départ", source);
+            destination = new JTextField();
+            builder.append("Compte Destination", destination);
+            amount = new JTextField();
+            builder.append("Montant", amount);
+            transferBtn = new JButton("Transferer");
+            builder.append(transferBtn);
             transferBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -69,7 +73,7 @@ public class TransfertPanel extends JPanel {
                         JOptionPane.showMessageDialog(null, "Le montant est obligatoire", "Erreur", JOptionPane.ERROR_MESSAGE);
                     } else {
                         try {
-                            double value = Double.valueOf(amt);
+                            double value = Double.parseDouble(amt);
                             clientService.transfer(init, dest, value, UserInfo.getUserId());
                         } catch (NumberFormatException ps) {
                             JOptionPane.showMessageDialog(null, "Le montant doit etre un nombre", "Erreur", JOptionPane.ERROR_MESSAGE);

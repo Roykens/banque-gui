@@ -158,7 +158,8 @@ public class MainMenuPanel extends JPanel {
             }
         };
         employee.setTitle(helper.getProperty("mainMenuPanel.espaceEmploye"));
-        employee.add(debit = new JXHyperlink());
+        debit = new JXHyperlink();
+        employee.add(debit);
         debit.setText(helper.getProperty("mainMenuPanel.debit"));
         debit.setUnclickedColor(Color.blue);
         debit.setClickedColor(Color.blue);
@@ -168,7 +169,8 @@ public class MainMenuPanel extends JPanel {
                     setContenu(new NouveauDebitPanel(MainMenuPanel.this));               
             }
         });
-        employee.add(credit = new JXHyperlink());
+        credit = new JXHyperlink();
+        employee.add(credit);
         credit.setText(helper.getProperty("mainMenuPanel.credit"));
         credit.setUnclickedColor(Color.blue);
         credit.setClickedColor(Color.blue);
@@ -192,7 +194,8 @@ public class MainMenuPanel extends JPanel {
         menu.add(adminPane);
         JXTaskPane profilPane = new JXTaskPane();
         profilPane.setTitle(helper.getProperty("mainMenuPanel.profil"));
-        profilPane.add(profil = new JXHyperlink());
+        profil = new JXHyperlink();
+        profilPane.add(profil);
         profil.setText(helper.getProperty("mainMenuPanel.profil"));
         profil.addActionListener(new ActionListener() {
             @Override

@@ -56,8 +56,8 @@ public class MesOperationsListePanel extends JPanel {
             setLayout(new BorderLayout());
             JPanel hautPanel = new JPanel(new GridLayout(2, 1));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            Label lbl;
-            pan.add(lbl = new Label("LA LISTE DE MES OPERATIONS"));
+            Label lbl = new Label("LA LISTE DE MES OPERATIONS");
+            pan.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             hautPanel.add(pan);
             JPanel filtrePanel = new JPanel();

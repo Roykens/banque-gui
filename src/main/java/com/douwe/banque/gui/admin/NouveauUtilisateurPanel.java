@@ -39,31 +39,36 @@ public class NouveauUtilisateurPanel extends JPanel {
     private JPasswordField passwdText2;
     private JComboBox<RoleType> role;
     private JButton enregistrer;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient IBanqueAdminService adminService;
     private transient IBanqueCommonService commonService;
 
-    public NouveauUtilisateurPanel(MainMenuPanel parentFrame) {
+    public NouveauUtilisateurPanel(MainMenuPanel mainMenuPanelFrame) {
 
         super();
         adminService = new BanqueAdminServiceImpl();
         commonService = new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(20, 20));
-        this.parent = parentFrame;
+        this.mainMenuPanel = mainMenuPanelFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lbl;
-        haut.add(lbl = new JLabel("AJOUT D'UN NOUVEAU UTILISATEUR DANS MA BANQUE POPULAIRE"));
+        JLabel lbl = new JLabel("AJOUT D'UN NOUVEAU UTILISATEUR DANS MA BANQUE POPULAIRE");
+        haut.add(lbl );
         lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         add(BorderLayout.BEFORE_FIRST_LINE, haut);
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-        builder.append("Login", loginText = new JTextField());
-        builder.append("Mot de Passe", passwdText1 = new JPasswordField());
-        builder.append("Retapez mot de passe", passwdText2 = new JPasswordField());
-        builder.append("Role", role = new JComboBox<RoleType>());
+        loginText = new JTextField();
+        builder.append("Login",loginText );
+        passwdText1 = new JPasswordField();
+        builder.append("Mot de Passe",passwdText1 );
+        passwdText2 = new JPasswordField();
+        builder.append("Retapez mot de passe",passwdText2 );
+        role = new JComboBox<RoleType>();
+        builder.append("Role",role );
         role.addItem(null);
         role.addItem(RoleType.ADMIN);
         role.addItem(RoleType.EMPLOYEE);
-        builder.append(enregistrer = new JButton("Enregistrer"));
+        enregistrer = new JButton("Enregistrer");
+        builder.append(enregistrer);
         add(BorderLayout.CENTER, builder.getPanel());
         enregistrer.addActionListener(new ActionListener() {
             @Override
@@ -102,7 +107,7 @@ public class NouveauUtilisateurPanel extends JPanel {
                     o.setUser(user);
                     o.setDescription("Ajout de l'utilisateur " + login.toLowerCase());
                     commonService.saveOperation(o);
-                    parent.setContenu(new UtilisateurPanel(parent));
+                    mainMenuPanel.setContenu(new UtilisateurPanel(mainMenuPanel));
                 } catch (ServiceException ex) {
                     JOptionPane.showMessageDialog(null, "Impossible de créer le compte");
                     Logger.getLogger(NouveauUtilisateurPanel.class.getName()).log(Level.SEVERE, null, ex);

@@ -43,7 +43,7 @@ public class ClientPanel extends JPanel {
     private JTable clientTable;
     private DefaultTableModel tableModel;
     private JTextField nameText;
-    private transient  MainMenuPanel parent;
+    private transient  MainMenuPanel mainMenuPanel;
     private transient  IBanqueAdminService adminService;
     private transient  MessageHelper helper;
     private  transient IBanqueCommonService commonService;
@@ -54,11 +54,11 @@ public class ClientPanel extends JPanel {
             adminService = new BanqueAdminServiceImpl();
             commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
-            this.parent = parentFrame;
+            this.mainMenuPanel = parentFrame;
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
-            JLabel lbl;
-            haut.add(lbl = new JLabel(helper.getProperty("clientPanel.liste")));
+            JLabel lbl = new JLabel(helper.getProperty("clientPanel.liste"));
+            haut.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
@@ -95,7 +95,7 @@ public class ClientPanel extends JPanel {
             nouveauBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauClientPanel(parent));
+                    mainMenuPanel.setContenu(new NouveauClientPanel(mainMenuPanel));
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
@@ -103,7 +103,7 @@ public class ClientPanel extends JPanel {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
-                        parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        mainMenuPanel.setContenu(new NouveauClientPanel(mainMenuPanel, (Integer) tableModel.getValueAt(selected, 0)));
                     } else {
                         JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucunClient"));
                     }
@@ -138,7 +138,8 @@ public class ClientPanel extends JPanel {
             JPanel filtrePanel = new JPanel();
             filtrePanel.setLayout(new FlowLayout());
             filtrePanel.add(new JLabel("Nom"));
-            filtrePanel.add(nameText = new JTextField());
+            nameText = new JTextField();
+            filtrePanel.add(nameText);
             nameText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);

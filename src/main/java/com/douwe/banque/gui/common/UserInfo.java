@@ -9,9 +9,9 @@ import com.douwe.banque.data.RoleType;
 public class UserInfo {
     
     private static String username;
-    private static int user_id;
+    private static int userId;
     private static RoleType role;
-    private static int customer_id;
+    private static int customerId;
     private static boolean logged = false;
     
 
@@ -24,11 +24,11 @@ public class UserInfo {
     }
 
     public static int getUserId() {
-        return user_id;
+        return userId;
     }
 
-    public static void setUserId(int user_id) {
-        UserInfo.user_id = user_id;
+    public static void setUserId(int userId) {
+        UserInfo.userId = userId;
     }
 
     public static RoleType getRole() {
@@ -48,10 +48,10 @@ public class UserInfo {
     }
 
     public static int getCustomerId() {
-        return customer_id;
+        return customerId;
     }
 
-    public static void setCustomerId(int customer_id) {
-        UserInfo.customer_id = customer_id;
+    public static void setCustomerId(int customerId) {
+        UserInfo.customerId = customerId;
     }
 }

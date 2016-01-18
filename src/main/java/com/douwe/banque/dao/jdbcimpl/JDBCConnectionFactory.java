@@ -1,4 +1,4 @@
-package com.douwe.banque.dao.jdbcImpl;
+package com.douwe.banque.dao.jdbcimpl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

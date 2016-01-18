@@ -1,4 +1,4 @@
-package com.douwe.banque.dao.jdbcImpl;
+package com.douwe.banque.dao.jdbcimpl;
 
 import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.IUserDao;
@@ -146,7 +146,7 @@ public class UserDaoJDBC implements IUserDao {
         try {
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
-                user = SaveUser(rs);
+                user = saveUser(rs);
             }
             rs.close();
             psmt.close();
@@ -157,7 +157,7 @@ public class UserDaoJDBC implements IUserDao {
         }
     }
 
-    private User SaveUser(ResultSet rs) throws DataAccessException {
+    private User saveUser(ResultSet rs) throws DataAccessException {
         try {
             User user = new User();
             user.setId(rs.getInt("id"));
@@ -177,7 +177,7 @@ public class UserDaoJDBC implements IUserDao {
         try {
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
-                User user = SaveUser(rs);
+                User user = saveUser(rs);
                 resultat.add(user);
             }
             rs.close();
