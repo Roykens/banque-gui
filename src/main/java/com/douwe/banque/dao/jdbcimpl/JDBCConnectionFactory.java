@@ -1,4 +1,4 @@
-package com.douwe.banque.dao.jdbcImpl;
+package com.douwe.banque.dao.jdbcimpl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,9 +11,13 @@ import java.util.logging.Logger;
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
 public class JDBCConnectionFactory {
+
     private static final Connection conn = createConnection();
-    
-    private static Connection createConnection(){
+
+    private JDBCConnectionFactory() {
+    }
+
+    private static Connection createConnection() {
         try {
             return DriverManager.getConnection("jdbc:sqlite:banque.db");
         } catch (SQLException ex) {

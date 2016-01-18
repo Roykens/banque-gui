@@ -36,11 +36,11 @@ public class MainMenuPanel extends JPanel {
     private transient  JXHyperlink comptes;
     private transient  JXHyperlink customer;
     private transient  JXHyperlink operations;
-    private transient  JXHyperlink profil;
+    private final transient  JXHyperlink profil;
     private transient  JXHyperlink debit;
     private transient  JXHyperlink credit;
-    private transient  JPanel container;
-     private transient  final MessageHelper helper = new MessageHelper();
+    private final transient  JPanel container;
+     private final transient   MessageHelper helper = new MessageHelper();
   
 
     public MainMenuPanel() {
@@ -84,7 +84,7 @@ public class MainMenuPanel extends JPanel {
         utilisateurs = new JXHyperlink() {
             @Override
             public boolean isVisible() {
-                return UserInfo.getRole() == RoleType.admin;
+                return UserInfo.getRole() == RoleType.ADMIN;
             }
         };
         utilisateurs.setText(helper.getProperty("mainMenuPanel.utilisateurs"));
@@ -113,7 +113,7 @@ public class MainMenuPanel extends JPanel {
         operations = new JXHyperlink() {
             @Override
             public boolean isVisible() {
-                return UserInfo.getRole() == RoleType.admin;
+                return UserInfo.getRole() == RoleType.ADMIN;
             }
         };
         operations.setText(helper.getProperty("mainMenuPanel.operations"));
@@ -143,7 +143,7 @@ public class MainMenuPanel extends JPanel {
         JXTaskPane clientPane = new JXTaskPane() {
             @Override
             public boolean isVisible() {
-                return UserInfo.getRole() == RoleType.customer;
+                return UserInfo.getRole() == RoleType.CUSTOMER;
             }
         };
         clientPane.setTitle(helper.getProperty("mainMenuPanel.espaceClient"));
@@ -154,11 +154,12 @@ public class MainMenuPanel extends JPanel {
         JXTaskPane employee = new JXTaskPane() {
             @Override
             public boolean isVisible() {
-                return UserInfo.getRole() == RoleType.employee;
+                return UserInfo.getRole() == RoleType.EMPLOYEE;
             }
         };
         employee.setTitle(helper.getProperty("mainMenuPanel.espaceEmploye"));
-        employee.add(debit = new JXHyperlink());
+        debit = new JXHyperlink();
+        employee.add(debit);
         debit.setText(helper.getProperty("mainMenuPanel.debit"));
         debit.setUnclickedColor(Color.blue);
         debit.setClickedColor(Color.blue);
@@ -168,7 +169,8 @@ public class MainMenuPanel extends JPanel {
                     setContenu(new NouveauDebitPanel(MainMenuPanel.this));               
             }
         });
-        employee.add(credit = new JXHyperlink());
+        credit = new JXHyperlink();
+        employee.add(credit);
         credit.setText(helper.getProperty("mainMenuPanel.credit"));
         credit.setUnclickedColor(Color.blue);
         credit.setClickedColor(Color.blue);
@@ -181,7 +183,7 @@ public class MainMenuPanel extends JPanel {
         JXTaskPane adminPane = new JXTaskPane() {
             @Override
             public boolean isVisible() {
-                return (UserInfo.getRole() == RoleType.admin) || (UserInfo.getRole() == RoleType.employee);
+                return (UserInfo.getRole() == RoleType.ADMIN) || (UserInfo.getRole() == RoleType.EMPLOYEE);
             }
         };
         adminPane.setTitle(helper.getProperty("mainMenuPanel.admin"));
@@ -192,7 +194,8 @@ public class MainMenuPanel extends JPanel {
         menu.add(adminPane);
         JXTaskPane profilPane = new JXTaskPane();
         profilPane.setTitle(helper.getProperty("mainMenuPanel.profil"));
-        profilPane.add(profil = new JXHyperlink());
+        profil = new JXHyperlink();
+        profilPane.add(profil);
         profil.setText(helper.getProperty("mainMenuPanel.profil"));
         profil.addActionListener(new ActionListener() {
             @Override
@@ -206,8 +209,7 @@ public class MainMenuPanel extends JPanel {
         add(menu, BorderLayout.BEFORE_LINE_BEGINS);
         container = new JPanel();
         container.setLayout(new BorderLayout());
-        container.setBorder(new EmptyBorder(2, 20, 20, 20));
-        //container.setBackground(Color.GREEN);
+        container.setBorder(new EmptyBorder(2, 20, 20, 20));        
         add(container, BorderLayout.CENTER);
     }
 

@@ -6,7 +6,7 @@ package com.douwe.banque.data;
  * @author Vincent Douwe <douwevincent@yahoo.fr>
  */
 public enum OperationType {
-    
-    credit, debit, transfer, cloture, ouverture,connexion, deconnexion,ajout, suppression;
+        
+    CREDIT, DEBIT, TRANSFER, CLOTURE, OUVERTURE, CONNEXION, DECONNEXION, AJOUT, SUPPRESSION;
     
 }

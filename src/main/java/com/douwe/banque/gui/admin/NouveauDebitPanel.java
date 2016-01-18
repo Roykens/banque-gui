@@ -19,7 +19,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,27 +37,31 @@ public class NouveauDebitPanel extends JPanel {
     private JTextField accountText;
     private JTextField amountText;
     private JButton btnEnregistrer;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient IBanqueAdminService adminService;
     private transient IBanqueCommonService commonService;
 
-    public NouveauDebitPanel(MainMenuPanel parentFrame) {
+    public NouveauDebitPanel(MainMenuPanel mainMenuPanelFrame) {
         super();
         adminService = new BanqueAdminServiceImpl();
         commonService= new BanqueServiceCommonImpl();
         setLayout(new BorderLayout(10, 10));
-        this.parent = parentFrame;
+        this.mainMenuPanel = mainMenuPanelFrame;
         JPanel haut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lbl;
-        haut.add(lbl = new JLabel("DÉBIT DE COMPTE DANS MA BANQUE POPULAIRE"));
+        JLabel lbl  = new JLabel("DÉBIT DE COMPTE DANS MA BANQUE POPULAIRE");
+        haut.add(lbl);
         lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         add(BorderLayout.BEFORE_FIRST_LINE, haut);
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("right:max(40dlu;p), 12dlu, 180dlu:", ""));
-        builder.append("Numéro Compte", accountText = new JTextField());
-        builder.append("Montant", amountText = new JTextField());
-        builder.append(btnEnregistrer = new JButton("Enrégistrer"));
+        accountText = new JTextField();
+        builder.append("Numéro Compte",accountText );
+        amountText = new JTextField();
+        builder.append("Montant", amountText );
+        btnEnregistrer = new JButton("Enrégistrer");
+        builder.append(btnEnregistrer);
         add(BorderLayout.CENTER, builder.getPanel());
         btnEnregistrer.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
                     String account = accountText.getText();
@@ -94,12 +97,12 @@ public class NouveauDebitPanel extends JPanel {
                         o.setAccount(acc);
                         o.setDateOperation(new Date(new java.util.Date().getTime()));
                         o.setDescription("Debit de " + amount + " du compte " + account);
-                        o.setType(OperationType.debit);
+                        o.setType(OperationType.DEBIT);
                         User u = adminService.findUserById(UserInfo.getUserId());
                         o.setUser(u);
                         commonService.saveOperation(o);
                         JOptionPane.showMessageDialog(null, "Opération réalisée avec succès");
-                            parent.setContenu(EmptyPanel.emptyPanel());
+                            mainMenuPanel.setContenu(EmptyPanel.emptyPanel());
                     }
                     }else {
                         JOptionPane.showMessageDialog(null, "Le compte specifié n'existe pas");

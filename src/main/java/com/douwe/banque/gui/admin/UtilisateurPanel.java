@@ -45,23 +45,23 @@ public class UtilisateurPanel extends JPanel {
     private JComboBox<RoleType> role;
     private JTable utilisateurTable;
     private DefaultTableModel tableModel;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient MessageHelper helper;
     private transient IBanqueAdminService adminService;
     private transient IBanqueCommonService commonService;
 
-    public UtilisateurPanel(MainMenuPanel parentFrame) {
+    public UtilisateurPanel(MainMenuPanel mainMenuPanelFrame) {
         super();
         helper = new MessageHelper();
         try {
             adminService = new BanqueAdminServiceImpl();
             commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
-            this.parent = parentFrame;
+            this.mainMenuPanel = mainMenuPanelFrame;
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
-            JLabel lbl;
-            haut.add(lbl = new JLabel(helper.getProperty("utilisateurPanel.liste")));
+            JLabel lbl = new JLabel(helper.getProperty("utilisateurPanel.liste"));
+            haut.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
@@ -104,7 +104,7 @@ public class UtilisateurPanel extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
 
-                    parent.setContenu(new NouveauUtilisateurPanel(parent));
+                    mainMenuPanel.setContenu(new NouveauUtilisateurPanel(mainMenuPanel));
                 }
             });
             initialiserPasswdBtn.addActionListener(new ActionListener() {
@@ -137,7 +137,7 @@ public class UtilisateurPanel extends JPanel {
                             o.setAccount(null);
                             o.setDateOperation(new Date(new java.util.Date().getTime()));
                             o.setDescription("Suppression de l'utilisateur " + tableModel.getValueAt(selected, 1));
-                            o.setType(OperationType.suppression);
+                            o.setType(OperationType.SUPPRESSION);
                             o.setUser(u);
                             commonService.saveOperation(o);
                             tableModel.removeRow(selected);
@@ -157,15 +157,17 @@ public class UtilisateurPanel extends JPanel {
             JPanel filtrePanel = new JPanel();
             filtrePanel.setLayout(new FlowLayout());
             filtrePanel.add(new JLabel("Nom Client"));
-            filtrePanel.add(loginText = new JTextField());
+            loginText = new JTextField();
+            filtrePanel.add(loginText);
             loginText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel("Type Compte"));
-            filtrePanel.add(role = new JComboBox<RoleType>());
+            role = new JComboBox<RoleType>();
+            filtrePanel.add(role);
             role.setPreferredSize(new Dimension(100, 25));
             role.addItem(null);
-            role.addItem(RoleType.customer);
-            role.addItem(RoleType.employee);
-            role.addItem(RoleType.admin);
+            role.addItem(RoleType.CUSTOMER);
+            role.addItem(RoleType.EMPLOYEE);
+            role.addItem(RoleType.ADMIN);
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);

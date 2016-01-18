@@ -1,4 +1,4 @@
-package com.douwe.banque.dao.jdbcImpl;
+package com.douwe.banque.dao.jdbcimpl;
 
 import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.ICustomerDao;
@@ -79,30 +79,11 @@ public class CustomerDaoJDBC implements ICustomerDao {
 
     @Override
     public Customer findById(Integer id) throws DataAccessException {
-        try {
-            Customer res = null;
+        try {            
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select c.name, c.emailAddress, c.id as cid, c.phoneNumber, c.status as cstatus, u.* from customer c, users u where  c.user_id = u.id and c.id = ?");
             psmt.setInt(1, id);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                res = new Customer();
-                res.setName(rs.getString("name"));
-                res.setEmailAddress(rs.getString("emailAddress"));
-                res.setId(rs.getInt("cid"));
-                res.setStatus(rs.getInt("cstatus"));
-                res.setPhoneNumber(rs.getString("phoneNumber"));
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                res.setUser(user);
-            }
-            rs.close();
-            psmt.close();
-            return res;
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
@@ -136,77 +117,47 @@ public class CustomerDaoJDBC implements ICustomerDao {
 
     @Override
     public Customer findByUser(User us) throws DataAccessException {
-        Customer customer = null;
         try {
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select c.id as cid, c.emailAddress, c.phoneNumber, c.name,c.status as cstatus, u.id, u.username, u.passwd, u.status, u.role from customer c, users u where c.user_id=u.id and u.username = ?");
             psmt.setString(1, us.getLogin());
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                customer = new Customer();
-                User user = new User();
-                customer.setId(rs.getInt("cid"));
-                customer.setEmailAddress(rs.getString("emailAddress"));
-                customer.setPhoneNumber(rs.getString("phoneNumber"));
-                customer.setStatus(rs.getInt("cstatus"));
-                customer.setName(rs.getString("name"));
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                customer.setUser(user);
-            }
-            rs.close();
-            psmt.close();
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
         }
-        return customer;
     }
 
     @Override
     public Customer findByName(String customerName) throws DataAccessException {
-        Customer customer = null;
         try {
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select c.id as cid, c.emailAddress, c.phoneNumber, c.name,c.status as cstatus, u.id, u.username, u.passwd, u.status, u.role from customer c, users u where c.user_id=u.id and c.name = ?");
             psmt.setString(1, customerName);
-            ResultSet rs = psmt.executeQuery();
-            if (rs.next()) {
-                customer = new Customer();
-                User user = new User();
-                customer.setId(rs.getInt("cid"));
-                customer.setEmailAddress(rs.getString("emailAddress"));
-                customer.setPhoneNumber(rs.getString("phoneNumber"));
-                customer.setStatus(rs.getInt("cstatus"));
-                customer.setName(rs.getString("name"));
-                user.setId(rs.getInt("id"));
-                user.setLogin(rs.getString("username"));
-                user.setPassword(rs.getString("passwd"));
-                user.setRole(RoleType.values()[rs.getInt("role")]);
-                user.setStatus(rs.getInt("status"));
-                customer.setUser(user);
-            }
-            rs.close();
-            psmt.close();
+            return executeQueryResult(psmt);
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
         }
-        return customer;
     }
-    
-  /* Pas encore au point*/
 
+    /* Pas encore au point*/
     @Override
-    public Customer findByAccount(Account account) throws DataAccessException {
-        Customer customer = null;
+    public Customer findByAccount(Account account) throws DataAccessException {        
         try {
             Connection conn = JDBCConnectionFactory.getConnection();
             PreparedStatement psmt = conn.prepareStatement("select c.id as cid, c.emailAddress, c.phoneNumber, c.name,c.status as cstatus, u.id, u.username, u.passwd, u.status, u.role from customer c, users u where c.id= ?");
             psmt.setInt(1, account.getId());
+           return executeQueryResult(psmt);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DataAccessException(ex);
+        }        
+    }
+
+    private Customer executeQueryResult(PreparedStatement psmt) throws DataAccessException {
+        try {
+            Customer customer = null;
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
                 customer = new Customer();
@@ -225,10 +176,10 @@ public class CustomerDaoJDBC implements ICustomerDao {
             }
             rs.close();
             psmt.close();
+            return customer;
         } catch (SQLException ex) {
-            Logger.getLogger(CustomerDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AccountDaoJDBC.class.getName()).log(Level.SEVERE, null, ex);
             throw new DataAccessException(ex);
         }
-        return customer;
     }
 }

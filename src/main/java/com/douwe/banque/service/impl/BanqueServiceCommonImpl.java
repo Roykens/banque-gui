@@ -5,9 +5,9 @@ import com.douwe.banque.dao.DataAccessException;
 import com.douwe.banque.dao.ICustomerDao;
 import com.douwe.banque.dao.IOperationDao;
 import com.douwe.banque.dao.IUserDao;
-import com.douwe.banque.dao.jdbcImpl.CustomerDaoJDBC;
-import com.douwe.banque.dao.jdbcImpl.OperationDaoJDBC;
-import com.douwe.banque.dao.jdbcImpl.UserDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.CustomerDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.OperationDaoJDBC;
+import com.douwe.banque.dao.jdbcimpl.UserDaoJDBC;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
@@ -73,6 +73,7 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService {
         try {
             User user = userDao.findByLogin(login);
             return customerDao.findByUser(user);
+
         } catch (DataAccessException ex) {
             Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServiceException(ex);

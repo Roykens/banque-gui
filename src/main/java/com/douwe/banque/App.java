@@ -9,10 +9,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class App {
 
+    private App() {
+    }
+
     public static void main(String[] args) throws ClassNotFoundException {
         lookAndFeel();
         Class.forName("org.sqlite.JDBC");
         SwingUtilities.invokeLater(new Runnable() { 
+            @Override
             public void run() {
                 try {
                     MainFrame frame = new MainFrame();

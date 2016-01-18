@@ -1,7 +1,6 @@
 package com.douwe.banque.gui.admin;
 
 import com.douwe.banque.data.OperationType;
-import com.douwe.banque.gui.MainMenuPanel;
 import com.douwe.banque.model.projection.AccountOperation;
 import com.douwe.banque.service.IBanqueAdminService;
 
@@ -59,8 +58,8 @@ public class OperationsPanel extends JPanel {
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
-            JLabel lbl;
-            haut.add(lbl = new JLabel(helper.getProperty("operationsPanel.liste")));
+            JLabel lbl  = new JLabel(helper.getProperty("operationsPanel.liste"));
+            haut.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
@@ -92,22 +91,27 @@ public class OperationsPanel extends JPanel {
             });
             filtrePanel.setLayout(new FlowLayout());
             filtrePanel.add(new JLabel("Nom Client"));
-            filtrePanel.add(clientText = new JTextField());
+            clientText = new JTextField();
+            filtrePanel.add(clientText);
             clientText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel("Numero Compte"));
-            filtrePanel.add(compteText = new JTextField());
+            compteText = new JTextField();
+            filtrePanel.add(compteText);
             compteText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel("Type Opération"));
-            filtrePanel.add(type = new JComboBox<OperationType>());
+            type = new JComboBox<OperationType>();
+            filtrePanel.add(type);
             type.setPreferredSize(new Dimension(100, 25));
             type.addItem(null);
             for (int i = 0; i < OperationType.values().length; i++) {
                 type.addItem(OperationType.values()[i]);
             }
             filtrePanel.add(new JLabel("Début"));
-            filtrePanel.add(startDate = new JXDatePicker());
+            startDate = new JXDatePicker();
+            filtrePanel.add(startDate);
             filtrePanel.add(new JLabel("Fin"));
-            filtrePanel.add(endDate = new JXDatePicker());
+            endDate = new JXDatePicker();
+            filtrePanel.add(endDate);
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);
             tableModel = new DefaultTableModel(new Object[]{"Opération", "Compte", "Date", "Utilisateur", "Description"}, 0);

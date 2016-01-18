@@ -49,7 +49,7 @@ public class ComptePanel extends JPanel {
     private JTextField nameText;
     private JTextField numberText;
     private JComboBox<AccountType> type;
-    private transient MainMenuPanel parent;
+    private transient MainMenuPanel mainMenuPanel;
     private transient IBanqueAdminService adminService;
     private transient MessageHelper helper;
     private transient IBanqueCommonService commonService;
@@ -61,12 +61,12 @@ public class ComptePanel extends JPanel {
             adminService = new BanqueAdminServiceImpl();
             commonService = new BanqueServiceCommonImpl();
             helper = new MessageHelper();
-            this.parent = parentFrame;
+            this.mainMenuPanel = parentFrame;
             setLayout(new BorderLayout());
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
-            JLabel lbl;
-            haut.add(lbl = new JLabel(helper.getProperty("comptePanel.liste")));
+            JLabel lbl  = new JLabel(helper.getProperty("comptePanel.liste"));
+            haut.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
@@ -104,7 +104,7 @@ public class ComptePanel extends JPanel {
 
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauComptePanel(parent));
+                    mainMenuPanel.setContenu(new NouveauComptePanel(mainMenuPanel));
 
                 }
             });
@@ -114,7 +114,7 @@ public class ComptePanel extends JPanel {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
 
-                        parent.setContenu(new NouveauComptePanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        mainMenuPanel.setContenu(new NouveauComptePanel(mainMenuPanel, (Integer) tableModel.getValueAt(selected, 0)));
 
                     } else {
 
@@ -129,8 +129,7 @@ public class ComptePanel extends JPanel {
                     int selected = compteTable.getSelectedRow();
                     if (selected >= 0) {
                         try {
-                            String accountNumber = (String) tableModel.getValueAt(selected, 1);
-                            //conn.setAutoCommit(false);
+                            String accountNumber = (String) tableModel.getValueAt(selected, 1);                            
                             Account acc = adminService.findAccountByNumber(accountNumber);
                             User user = adminService.getUserByAccount(acc.getId());
                             adminService.deleteAccount(acc.getId());
@@ -138,7 +137,7 @@ public class ComptePanel extends JPanel {
                             ope.setDateOperation(new Date(new java.util.Date().getTime()));
                             ope.setAccount(acc);
                             ope.setDescription("Cloture du compte " + accountNumber);
-                            ope.setType(OperationType.cloture);
+                            ope.setType(OperationType.CLOTURE);
                             ope.setUser(user);
                             commonService.saveOperation(ope);
                             tableModel.removeRow(selected);
@@ -158,17 +157,20 @@ public class ComptePanel extends JPanel {
             JPanel filtrePanel = new JPanel();
             filtrePanel.setLayout(new FlowLayout());
             filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.nom")));
-            filtrePanel.add(nameText = new JTextField());
+            nameText = new JTextField();
+            filtrePanel.add(nameText);
             nameText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.numero")));
-            filtrePanel.add(numberText = new JTextField());
+            numberText = new JTextField();
+            filtrePanel.add(numberText);
             numberText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(new JLabel(helper.getProperty("comptePanel.filter.type")));
-            filtrePanel.add(type = new JComboBox<AccountType>());
+            type = new JComboBox<AccountType>();
+            filtrePanel.add(type);
             type.setPreferredSize(new Dimension(100, 25));
             type.addItem(null);
-            type.addItem(AccountType.deposit);
-            type.addItem(AccountType.saving);
+            type.addItem(AccountType.DEPOSIT);
+            type.addItem(AccountType.SAVING);
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);
             contenu.add(BorderLayout.BEFORE_FIRST_LINE, filtrePanel);

@@ -15,7 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -44,7 +43,7 @@ public class ClientPanel extends JPanel {
     private JTable clientTable;
     private DefaultTableModel tableModel;
     private JTextField nameText;
-    private transient  MainMenuPanel parent;
+    private transient  MainMenuPanel mainMenuPanel;
     private transient  IBanqueAdminService adminService;
     private transient  MessageHelper helper;
     private  transient IBanqueCommonService commonService;
@@ -55,11 +54,11 @@ public class ClientPanel extends JPanel {
             adminService = new BanqueAdminServiceImpl();
             commonService = new BanqueServiceCommonImpl();
             setLayout(new BorderLayout());
-            this.parent = parentFrame;
+            this.mainMenuPanel = parentFrame;
             JPanel haut = new JPanel();
             haut.setLayout(new FlowLayout(FlowLayout.CENTER));
-            JLabel lbl;
-            haut.add(lbl = new JLabel(helper.getProperty("clientPanel.liste")));
+            JLabel lbl = new JLabel(helper.getProperty("clientPanel.liste"));
+            haut.add(lbl);
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, haut);
             JPanel contenu = new JPanel();
@@ -76,7 +75,7 @@ public class ClientPanel extends JPanel {
                     selectCustomerbyStatus();
                 }
 
-                private void selectCustomerbyStatus() throws HeadlessException {
+                private void selectCustomerbyStatus() {
                     String name = nameText.getText();
                     try {
                         List<Customer> customers = adminService.findCustomerByName(name);
@@ -96,7 +95,7 @@ public class ClientPanel extends JPanel {
             nouveauBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    parent.setContenu(new NouveauClientPanel(parent));
+                    mainMenuPanel.setContenu(new NouveauClientPanel(mainMenuPanel));
                 }
             });
             modifierBtn.addActionListener(new ActionListener() {
@@ -104,7 +103,7 @@ public class ClientPanel extends JPanel {
                 public void actionPerformed(ActionEvent ae) {
                     int selected = clientTable.getSelectedRow();
                     if (selected >= 0) {
-                        parent.setContenu(new NouveauClientPanel(parent, (Integer) tableModel.getValueAt(selected, 0)));
+                        mainMenuPanel.setContenu(new NouveauClientPanel(mainMenuPanel, (Integer) tableModel.getValueAt(selected, 0)));
                     } else {
                         JOptionPane.showMessageDialog(null, helper.getProperty("clientPanel.aucunClient"));
                     }
@@ -122,7 +121,7 @@ public class ClientPanel extends JPanel {
                             o.setAccount(null);
                             o.setDateOperation(new Date(new java.util.Date().getTime()));
                             o.setDescription("Suppression du client " + tableModel.getValueAt(selected, 1));
-                            o.setType(OperationType.suppression);
+                            o.setType(OperationType.SUPPRESSION);
                             o.setUser(null);
                             commonService.saveOperation(o);
                         } catch (ServiceException ex) {
@@ -139,7 +138,8 @@ public class ClientPanel extends JPanel {
             JPanel filtrePanel = new JPanel();
             filtrePanel.setLayout(new FlowLayout());
             filtrePanel.add(new JLabel("Nom"));
-            filtrePanel.add(nameText = new JTextField());
+            nameText = new JTextField();
+            filtrePanel.add(nameText);
             nameText.setPreferredSize(new Dimension(100, 25));
             filtrePanel.add(filtreBtn);
             contenu.add(BorderLayout.AFTER_LAST_LINE, bas);

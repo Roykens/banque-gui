@@ -24,8 +24,7 @@ import javax.swing.table.DefaultTableModel;
 public class MesCompteListePanel extends JPanel {
 
     private JTable compteTable;
-    private DefaultTableModel model;
-    private static final String request = "select * from account where customer_id=?";
+    private DefaultTableModel model;    
     private transient IBanqueClientService clientService;
 
     public MesCompteListePanel() {
@@ -34,8 +33,8 @@ public class MesCompteListePanel extends JPanel {
             clientService = new BanqueClientServiceImpl();
             setLayout(new BorderLayout(10, 10));
             JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            Label lbl;
-            pan.add(lbl = new Label("LA LISTE DE MES COMPTES"));
+            Label lbl = new Label("LA LISTE DE MES COMPTES");
+            pan.add(lbl );
             lbl.setFont(new Font("Times New Roman", Font.ITALIC, 18));
             add(BorderLayout.BEFORE_FIRST_LINE, pan);
             JPanel btnPanel = new JPanel();

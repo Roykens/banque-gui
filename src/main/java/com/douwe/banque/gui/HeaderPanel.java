@@ -23,7 +23,7 @@ public abstract class HeaderPanel extends JPanel{
 
     private final transient  JXHyperlink deconnexion;
     private final transient  JLabel username;
-    private transient  final MessageHelper helper = new MessageHelper();
+    private final transient   MessageHelper helper = new MessageHelper();
     
     public HeaderPanel(){
         setLayout(new FlowLayout(FlowLayout.RIGHT,10,10));        
@@ -40,6 +40,7 @@ public abstract class HeaderPanel extends JPanel{
         add(deconnexion); 
         deconnexion.addActionListener(new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 deconnexion();
                 setEnabledHeader(false);

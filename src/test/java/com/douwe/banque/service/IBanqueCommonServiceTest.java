@@ -64,7 +64,7 @@ public class IBanqueCommonServiceTest {
         
         user.setLogin("admin");
         user.setPassword("admin");
-        user.setRole(RoleType.admin);
+        user.setRole(RoleType.ADMIN);
         user.setStatus(0);
         EasyMock.expect(mockDao.save(user)).andReturn(user);
    //     EasyMock.expect(service.login(username,passwd)).andReturn(user);
