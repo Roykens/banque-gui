@@ -70,6 +70,8 @@ public class NouveauComptePanel extends JPanel {
 
     public NouveauComptePanel(MainMenuPanel parentFrame) {
         super();
+        adminService = new BanqueAdminServiceImpl();
+        commonService = new BanqueServiceCommonImpl();
         this.parent = parentFrame;
         adminService = new BanqueAdminServiceImpl();
         commonService = new BanqueServiceCommonImpl();
