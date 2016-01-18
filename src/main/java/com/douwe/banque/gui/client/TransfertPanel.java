@@ -1,6 +1,7 @@
 package com.douwe.banque.gui.client;
 
 import com.douwe.banque.gui.MainMenuPanel;
+import com.douwe.banque.gui.common.EmptyPanel;
 import com.douwe.banque.gui.common.UserInfo;
 import com.douwe.banque.model.Account;
 import com.douwe.banque.service.IBanqueClientService;
@@ -71,6 +72,9 @@ public class TransfertPanel extends JPanel {
                         try {
                             double value = Double.valueOf(amt);
                             clientService.transfer(init, dest, value, UserInfo.getUserId());
+                            JOptionPane.showMessageDialog(null, "Operation de transfert realisee avec succes");
+                            parent.setContenu(EmptyPanel.emptyPanel());
+       
                         } catch (NumberFormatException ps) {
                             JOptionPane.showMessageDialog(null, "Le montant doit etre un nombre", "Erreur", JOptionPane.ERROR_MESSAGE);
                         } catch (ServiceException ex) {

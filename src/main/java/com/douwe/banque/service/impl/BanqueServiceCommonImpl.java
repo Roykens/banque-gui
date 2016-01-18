@@ -2,6 +2,12 @@ package com.douwe.banque.service.impl;
 
 import com.douwe.banque.dao.DaoFactory;
 import com.douwe.banque.dao.DataAccessException;
+import com.douwe.banque.dao.ICustomerDao;
+import com.douwe.banque.dao.IOperationDao;
+import com.douwe.banque.dao.IUserDao;
+import com.douwe.banque.dao.jdbcImpl.CustomerDaoJDBC;
+import com.douwe.banque.dao.jdbcImpl.OperationDaoJDBC;
+import com.douwe.banque.dao.jdbcImpl.UserDaoJDBC;
 import com.douwe.banque.data.OperationType;
 import com.douwe.banque.model.Customer;
 import com.douwe.banque.model.Operation;
@@ -24,16 +30,34 @@ import java.util.logging.Logger;
  */
 public class BanqueServiceCommonImpl implements IBanqueCommonService {
 
-    private final DaoFactory daoFactory;
+    private IUserDao userDao;
+    private IOperationDao operationDao;
+    private ICustomerDao customerDao;
 
     public BanqueServiceCommonImpl() {
-        daoFactory = new DaoFactory();
+        userDao = new UserDaoJDBC();
+        operationDao = new OperationDaoJDBC();
+        customerDao = new CustomerDaoJDBC();
     }
+
+    public void setUserDao(IUserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setOperationDao(IOperationDao operationDao) {
+        this.operationDao = operationDao;
+    }
+
+    public void setCustomerDao(ICustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+    
+    
 
     @Override
     public User login(String username, String passwd) throws ServiceException {
         try {
-            User us = daoFactory.getUserDao().findByLogin(username);
+            User us = userDao.findByLogin(username);
             if ((us != null) && (us.getPassword().equalsIgnoreCase(passwd))) {
                 return us;
             }
@@ -47,8 +71,8 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService {
     @Override
     public Customer findCustomerByLogin(String login) throws ServiceException {
         try {
-            User user = daoFactory.getUserDao().findByLogin(login);
-            return daoFactory.getCustomerDao().findByUser(user);
+            User user = userDao.findByLogin(login);
+            return customerDao.findByUser(user);
         } catch (DataAccessException ex) {
             Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServiceException(ex);
@@ -58,7 +82,7 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService {
     @Override
     public void saveOperation(Operation op) throws ServiceException {
         try {
-            daoFactory.getOperationDao().save(op);
+            operationDao.save(op);
         } catch (DataAccessException ex) {
             Logger.getLogger(BanqueAdminServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServiceException(ex);
@@ -69,7 +93,7 @@ public class BanqueServiceCommonImpl implements IBanqueCommonService {
     public List<AccountOperation> findOperationByCriteria(String accountNumber, String userName, OperationType opType, Date debut, Date fin) throws ServiceException {
         List<AccountOperation> result = new ArrayList<>();
         try {
-            for (Operation operation : daoFactory.getOperationDao().findAll()) {
+            for (Operation operation : operationDao.findAll()) {
                 if ((userName.isEmpty() || operation.getUser().getLogin().toLowerCase().contains(userName.toLowerCase()))
                         && (accountNumber.isEmpty() || operation.getAccount().getAccountNumber().toLowerCase().contains(accountNumber.toLowerCase()))
                         && ((opType == null) || operation.getType() == opType)

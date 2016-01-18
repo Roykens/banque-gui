@@ -1,17 +1,13 @@
 package com.douwe.banque.service;
 
-import com.douwe.banque.data.OperationType;
+import com.douwe.banque.dao.IUserDao;
 import com.douwe.banque.data.RoleType;
-import com.douwe.banque.model.Customer;
-import com.douwe.banque.model.Operation;
 import com.douwe.banque.model.User;
-import com.douwe.banque.model.projection.AccountOperation;
-import com.douwe.banque.service.exception.ServiceException;
 import com.douwe.banque.service.impl.BanqueServiceCommonImpl;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.createStrictMock;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,54 +20,61 @@ import static org.junit.Assert.*;
  * @author Kenfack Valmy-Roi <roykenvalmy@gmail.com>
  */
 public class IBanqueCommonServiceTest {
-    
-    private IBanqueCommonService service;
-    
+
+    private BanqueServiceCommonImpl service;
+
+    private IUserDao mockDao;
+
     public IBanqueCommonServiceTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(IBanqueCommonServiceTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
         service = new BanqueServiceCommonImpl();
+        mockDao = createStrictMock(IUserDao.class);
+        service.setUserDao(mockDao);
     }
-    
+
     @After
     public void tearDown() {
+//        EasyMock.verify(service);
+  //      service = null;
     }
 
     /**
      * Test of login method, of class IBanqueCommonService.
+     *
+     * @throws java.lang.Exception
      */
     @Test
     public void testLogin() throws Exception {
         System.out.println(" Test de login");
         String username = "admin";
         String passwd = "admin";
-       // IBanqueCommonService instance = new IBanqueCommonServiceImpl();
-        User expResult = new User();
-        expResult.setLogin("admin");
-        expResult.setPassword("admin");
-        expResult.setRole(RoleType.admin);
-        expResult.setStatus(0);
-        expResult.setId(2);
-        User result = service.login(username, passwd);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        User user = new User();
+        
+        user.setLogin("admin");
+        user.setPassword("admin");
+        user.setRole(RoleType.admin);
+        user.setStatus(0);
+        EasyMock.expect(mockDao.save(user)).andReturn(user);
+   //     EasyMock.expect(service.login(username,passwd)).andReturn(user);
+        EasyMock.replay(mockDao);
+
+
+        User result = service.login(username,passwd);
+        System.out.println(result);
+        assertNotNull(result);
+        assertEquals(user, result);
     }
 
-    
 }
